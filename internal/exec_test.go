@@ -26,4 +26,13 @@ func TestExec(t *testing.T) {
 
 	message, _ = Branch(false, false)
 	fmt.Println(message)
+	message, _ = Branch(true, false)
+	fmt.Println(message)
+	message, _ = Branch(false, true)
+	fmt.Println(message)
+	message, _ = Branch(true, true)
+	fmt.Println(message)
+
+	message, _ = CurrentBranch()
+	fmt.Println(message)
 }

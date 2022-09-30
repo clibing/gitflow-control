@@ -1,9 +1,11 @@
 package internal
 
 import (
+	"errors"
+	"fmt"
 )
 
-func Version() (string, error){
+func Version() (string, error) {
 	msg, err := ExecGit("version")
 	if err != nil {
 		return "", err
@@ -33,16 +35,71 @@ func Branch(all, remote bool) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	var cmd [3]string
-	cmd[0] = "branch"
-	cmd[1] = ""
-	cmd[2] = ""
-
+	if all && remote {
+		return ExecGit("branch", "-a", "-r")
+	}
 	if all {
-		cmd[1] = "-a"
+		return ExecGit("branch", "-a")
 	}
 	if remote {
-		cmd[2] = "-r"
+		return ExecGit("branch", "-r")
 	}
-	return ExecGit(cmd[0], cmd[1], cmd[2])
+	return ExecGit("branch")
+}
+
+func CurrentBranch() (string, error) {
+	err := GitRepo()
+	if err != nil {
+		return "", err
+	}
+	return ExecGit("symbolic-ref", "--short", "HEAD")
+}
+
+func Author() (string, string, error) {
+	name := ""
+	email := ""
+
+	if value, err := ExecGit("config", "user.name"); err == nil {
+		name = value
+	}
+
+	if value, err := ExecGit("config", "user.email"); err == nil {
+		email = value
+	}
+
+	return name, email, nil
+}
+
+func SignedOffBy() (string, error) {
+	name, email, err := Author()
+
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("Signed-off-by: %s <%s>", name, email), nil
+}
+
+func Push() (string, error) {
+	err := GitRepo()
+	if err != nil {
+		return "", err
+	}
+
+	branch, err := CurrentBranch()
+	if err != nil {
+		return "", err
+	}
+
+	return ExecGit("push", "origin", branch)
+}
+
+func HasStagedFiles() error {
+	msg, err := ExecGit("diff", "--cached", "--name-only")
+	if err != nil {
+		return err
+	}
+	if msg == "" {
+		return errors.New("当前暂存区没有文件，执行`git add`增加文件后再次提交")
+	}
+	return nil
 }
