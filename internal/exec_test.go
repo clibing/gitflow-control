@@ -38,4 +38,9 @@ func TestExec(t *testing.T) {
 	message, _ = SignedOffBy()
 	fmt.Println(message)
 
+	err := HasStagedFiles()
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
 }

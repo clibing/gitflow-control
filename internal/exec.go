@@ -28,6 +28,4 @@ func ExecGit(commands ...string) (string, error) {
 	}
 
 	return strings.TrimSpace(string(bs)), nil
-
-	return "", nil
 }
