@@ -35,4 +35,7 @@ func TestExec(t *testing.T) {
 
 	message, _ = CurrentBranch()
 	fmt.Println(message)
+	message, _ = SignedOffBy()
+	fmt.Println(message)
+
 }
