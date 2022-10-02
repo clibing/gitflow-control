@@ -11,6 +11,7 @@ require (
 )
 
 require (
+	github.com/mitchellh/go-homedir v1.1.0
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/urfave/cli/v2 v2.17.1
 )

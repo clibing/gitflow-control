@@ -19,7 +19,7 @@ const (
 )
 
 const commitMessageCheckPattern = `^(feat|fix|docs|style|refactor|test|chore|perf|hotfix)\((\S.*)\):\s(\S.*)|^Merge.*`
- 
+
 var CommitMessageType = map[string]string{
 	Feat:     "新功能（feature）",
 	Fix:      "修补bug",
@@ -198,7 +198,6 @@ func Commit(msg CommitMessage) error {
 			}
 		}
 		footer_message = fmt.Sprintf("%s\n\nClosesCloses: %s", footer_message, strings.Join(issues, ","))
-
 	}
 
 	_, err = fmt.Fprintf(f, "[%s]%s(%s): %s\n\n%s\n\n%s\n\n%s\n", msg.Issue, msg.Type, msg.Scope, msg.Subject, msg.Body, footer_message, msg.SOB)
@@ -211,5 +210,6 @@ func Commit(msg CommitMessage) error {
 }
 
 func CheckCommitMessage(message string) error {
-
+	// 增加 commit-msg hook时使用
+	return nil
 }
