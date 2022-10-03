@@ -16,6 +16,7 @@ const (
 	Refactor string = "refactor"
 	Test     string = "test"
 	Chore    string = "chore"
+	Hotfix   string = "hotfix"
 )
 
 const commitMessageCheckPattern = `^(feat|fix|docs|style|refactor|test|chore|perf|hotfix)\((\S.*)\):\s(\S.*)|^Merge.*`
@@ -28,6 +29,7 @@ var CommitMessageType = map[string]string{
 	Refactor: "重构（即不是新增功能，也不是修改bug的代码变动）",
 	Test:     "增加测试",
 	Chore:    "构建过程或辅助工具的变动",
+	Hotfix:   "紧急修复线上bug",
 }
 
 func Version() (string, error) {
