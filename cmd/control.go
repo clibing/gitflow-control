@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	tea "github.com/charmbracelet/bubbletea"
 	"time"
 
 	"github.com/clibing/gitflow-control/internal"
@@ -25,7 +26,7 @@ func (c *Control) Init() {
 	subApps[5] = c.newBranchCliApp(internal.Test)
 	subApps[6] = c.newBranchCliApp(internal.Chore)
 	subApps[7] = c.newBranchCliApp("hotfix")
-	subApps[8] = commitApp()
+	subApps[8] = c.CommitApp()
 	subApps[9] = checkMessageApp()
 }
 
@@ -120,8 +121,33 @@ func (c *Control) GetBranchCliApp(binName string) *cli.App {
 	return nil
 }
 
-func commitApp() *cli.App {
-	return nil
+func (c *Control) CommitApp() *cli.App {
+	return &cli.App{
+		Name:                 "git-ci",
+		Usage:                "Interactive commit",
+		UsageText:            "git ci",
+		Version:              fmt.Sprintf("%s %s %s", c.Version, c.BuildDate, c.BuildCommit),
+		Authors:              []*cli.Author{{Name: "clibing", Email: "wmsjhappy@gmail.com"}},
+		Copyright:            "Copyright (c) " + time.Now().Format("2006") + " clibing, All rights reserved.",
+		EnableBashCompletion: true,
+		Action: func(c *cli.Context) error {
+			if c.NArg() != 0 {
+				return cli.ShowAppHelp(c)
+			}
+
+			m := internal.CommitModel{
+				Views: []tea.Model{
+					internal.NewSelectorModel(),
+					internal.NewInputsModel(),
+					internal.NewSubmitModel(),
+					internal.NewErrorModel(),
+				},
+			}
+
+			return tea.NewProgram(&m).Start()
+		},
+	}
+
 }
 
 func checkMessageApp() *cli.App {

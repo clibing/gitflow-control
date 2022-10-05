@@ -25,6 +25,18 @@ func main() {
 	}
 	control.Init()
 
+	control.CommitApp().Run(os.Args)
+}
+
+func main1() {
+
+	control := &cmd.Control{
+		Version:     version,
+		BuildDate:   buildDate,
+		BuildCommit: buildCommit,
+	}
+	control.Init()
+
 	app := control.DefaultCliApp()
 	// 可执行文件的路径
 	bin, err := exec.LookPath(os.Args[0])

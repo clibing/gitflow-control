@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"strings"
 )
 
 const (
@@ -40,7 +39,7 @@ func Version() (string, error) {
 	return msg, err
 }
 
-func GitRepo() error {
+func CheckRepo() error {
 	// 显示工作区根目录
 	_, err := ExecGit("rev-parse", "--show-toplevel")
 	// if err != nil {
@@ -50,7 +49,7 @@ func GitRepo() error {
 	return err
 }
 func Switch(name string) (string, error) {
-	err := GitRepo()
+	err := CheckRepo()
 	if err != nil {
 		return "", err
 	}
@@ -58,7 +57,7 @@ func Switch(name string) (string, error) {
 }
 
 func Branch(all, remote bool) (string, error) {
-	err := GitRepo()
+	err := CheckRepo()
 	if err != nil {
 		return "", err
 	}
@@ -75,7 +74,7 @@ func Branch(all, remote bool) (string, error) {
 }
 
 func CurrentBranch() (string, error) {
-	err := GitRepo()
+	err := CheckRepo()
 	if err != nil {
 		return "", err
 	}
@@ -107,7 +106,7 @@ func SignedOffBy() (string, error) {
 }
 
 func Push() (string, error) {
-	err := GitRepo()
+	err := CheckRepo()
 	if err != nil {
 		return "", err
 	}
@@ -132,18 +131,13 @@ func HasStagedFiles() error {
 }
 
 type CommitMessage struct {
-	Issue   string              // 问题
-	Type    string              // 已经初始化
-	Scope   string              // 本地提交影响的范围，例如:数据层、控制层、视图层等等，视项目不同而不同。
-	Subject string              // 不超过50个字符
-	Body    string              // 具体的描述信息 建议72个字符
-	Footer  CommitMessageFooter // 允许支持关闭issue
-	SOB     string              // name, email
-}
-
-type CommitMessageFooter struct {
-	Value  string   // 如果当前代码与上一个版本不兼容，则 Footer 部分以BREAKING CHANGE开头，后面是对变动的描述、以及变动理由和迁移方法。
-	Closes []string // 将要关闭的issue 如果存在值，则将Value中存在的Closes去掉，在Value后面追加 Closes #Issue[0],#Issue[1]....
+	Issue   string // 问题
+	Type    string // 已经初始化
+	Scope   string // 本地提交影响的范围，例如:数据层、控制层、视图层等等，视项目不同而不同。
+	Subject string // 不超过50个字符
+	Body    string // 具体的描述信息 建议72个字符
+	Footer  string // 允许支持关闭issue
+	SOB     string // name, email
 }
 
 type CommentMessageType struct {
@@ -183,26 +177,26 @@ func Commit(msg CommitMessage) error {
 	     * <footer>
 		 *
 	*/
-	footer := msg.Footer
+	//footer := msg.Footer
 
-	footer_message := ""
-	if len(footer.Value) > 0 {
-		footer_message = fmt.Sprintf("BREAKING CHANGE: %s", footer.Value)
-	}
+	//footerMessage := ""
+	//if len(footer.Value) > 0 {
+	//	footerMessage = fmt.Sprintf("BREAKING CHANGE: %s", footer.Value)
+	//}
+	//
+	//if len(footer.Closes) > 0 {
+	//	issues := make([]string, len(footer.Closes))
+	//	for _, issue := range footer.Closes {
+	//		if strings.HasPrefix(issue, "#") {
+	//			issues = append(issues, issue)
+	//		} else {
+	//			issues = append(issues, fmt.Sprintf("#%s", issue))
+	//		}
+	//	}
+	//	footerMessage = fmt.Sprintf("%s\n\nClosesCloses: %s", footerMessage, strings.Join(issues, ","))
+	//}
 
-	if len(footer.Closes) > 0 {
-		issues := make([]string, len(footer.Closes))
-		for _, issue := range footer.Closes {
-			if strings.HasPrefix(issue, "#") {
-				issues = append(issues, issue)
-			} else {
-				issues = append(issues, fmt.Sprintf("#%s", issue))
-			}
-		}
-		footer_message = fmt.Sprintf("%s\n\nClosesCloses: %s", footer_message, strings.Join(issues, ","))
-	}
-
-	_, err = fmt.Fprintf(f, "[%s]%s(%s): %s\n\n%s\n\n%s\n\n%s\n", msg.Issue, msg.Type, msg.Scope, msg.Subject, msg.Body, footer_message, msg.SOB)
+	_, err = fmt.Fprintf(f, "[%s]%s(%s): %s\n\n%s\n\n%s\n\n%s\n", msg.Issue, msg.Type, msg.Scope, msg.Subject, msg.Body, msg.Footer, msg.SOB)
 	if err != nil {
 		return err
 	}

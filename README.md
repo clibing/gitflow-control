@@ -28,6 +28,8 @@ git me 输入当前用户名s
 增加常用的命令
 
 快速创建分支
+```bash
+
     git-feat
     git-fix
     git-docs
@@ -37,11 +39,19 @@ git me 输入当前用户名s
     git-test
     git-hotfix
     git-perf
+```
 清理issue的记忆
+```bash
     git-issue [init|add|remove|reset] 可以增加多个 在ci时可以选择对应的issue
     git issue init -prefix [ -suffix ] -show header
     show: 代表issue的展示位置, 
         允许header: 如果在头，不进行Closes标记
         允许footer: 默认以Closes 开头: #001, #002s
+```
 提交
+```bash
     git-ci
+```
+
+调研
+* [https://cloud.tencent.com/developer/article/1839581](https://cloud.tencent.com/developer/article/1839581)
