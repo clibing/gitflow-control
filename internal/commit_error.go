@@ -1,6 +1,22 @@
 package internal
 
-import tea "github.com/charmbracelet/bubbletea"
+import (
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
+)
+
+var (
+	layOutStyle = lipgloss.NewStyle().
+		Padding(1, 0, 1, 2)
+
+	errorStyle = lipgloss.NewStyle().
+		Bold(true).
+		Width(64).
+		Foreground(lipgloss.AdaptiveColor{Light: "#E11C9C", Dark: "#FF62DA"}).
+		Border(lipgloss.RoundedBorder()).
+		BorderForeground(lipgloss.AdaptiveColor{Light: "#E11C9C", Dark: "#FF62DA"}).
+		Padding(1, 3, 1, 3)
+)
 
 type ErrorModel struct {
 	Err error
@@ -27,5 +43,6 @@ func (m ErrorModel) View() string {
 		return ""
 	}
 	// return layOutStyle.Render(errorStyle.Render(m.err.Error()))
-	return m.Err.Error()
+	//return m.Err.Error()
+	return layOutStyle.Render(errorStyle.Render(m.Err.Error()))
 }

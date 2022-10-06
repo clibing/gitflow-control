@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"github.com/charmbracelet/bubbles/help"
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -11,12 +12,26 @@ import (
 const listHeight = 14
 
 var (
-	titleStyle        = lipgloss.NewStyle().MarginLeft(0)
-	itemStyle         = lipgloss.NewStyle().PaddingLeft(4)
-	selectedItemStyle = lipgloss.NewStyle().PaddingLeft(2).Foreground(lipgloss.Color("170"))
-	paginationStyle   = list.DefaultStyles().PaginationStyle.PaddingLeft(4)
-	helpStyle         = list.DefaultStyles().HelpStyle.PaddingLeft(4).PaddingBottom(1)
-	quitTextStyle     = lipgloss.NewStyle().Margin(1, 0, 2, 4)
+	selectorTitleStyle = lipgloss.NewStyle().
+		Foreground(lipgloss.AdaptiveColor{Light: "#2E2E2E", Dark: "#DDDDDD"}).
+		Background(lipgloss.AdaptiveColor{Light: "#19A04B", Dark: "#25A065"}).
+		Bold(true).
+		Padding(0, 1)
+
+	selectorNormalStyle = lipgloss.NewStyle().
+		Foreground(lipgloss.AdaptiveColor{Light: "#1A1A1A", Dark: "#DDDDDD"}).
+		Padding(0, 0, 0, 2)
+
+	selectorSelectedStyle = lipgloss.NewStyle().
+		Border(lipgloss.NormalBorder(), false, false, false, true).
+		BorderForeground(lipgloss.AdaptiveColor{Light: "#9F72FF", Dark: "#AD58B4"}).
+		Foreground(lipgloss.AdaptiveColor{Light: "#9A4AFF", Dark: "#EE6FF8"}).
+		Bold(true).
+		Padding(0, 0, 0, 1)
+
+	selectorPaginationStyle = list.DefaultStyles().PaginationStyle.PaddingLeft(4)
+
+	selectorHelpStyle = lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{Light: "#6F6C6C", Dark: "#7A7A7A"})
 )
 
 type SelectorModel struct {
@@ -67,7 +82,7 @@ func (m SelectorModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case "enter":
 			m.choice = m.list.SelectedItem().(SelectorItem).CommitType
-			return m, func() tea.Msg { return Done{Next: ViewInputCommitMessage} }
+			return m, func() tea.Msg { return Next{Next: ViewInputCommitMessage} }
 
 		default:
 			if !m.list.SettingFilter() && (keypress == "q" || keypress == "esc") {
@@ -138,9 +153,13 @@ func NewSelectorModel() SelectorModel {
 	l.Title = "Select Commit Type"
 	l.SetShowStatusBar(false)
 	l.SetFilteringEnabled(false)
-	l.Styles.Title = titleStyle
-	l.Styles.PaginationStyle = paginationStyle
-	l.Styles.HelpStyle = helpStyle
+	l.Styles.Title = selectorTitleStyle
+	l.Styles.PaginationStyle = selectorPaginationStyle
+	h := help.New()
+	h.Styles.ShortDesc = selectorHelpStyle
+	h.Styles.ShortSeparator = selectorHelpStyle
+	h.Styles.ShortKey = selectorHelpStyle
+	l.Help = h
 
 	return SelectorModel{list: l}
 }

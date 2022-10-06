@@ -20,7 +20,7 @@ type CommitModel struct {
 	Error error       // 错误信息
 }
 
-type Done struct {
+type Next struct {
 	Error error // 错误信息
 	Next  int   // CommitModel.View 的下标
 }
@@ -30,13 +30,13 @@ func (m CommitModel) Init() tea.Cmd {
 		// 检查当前目录是否为git工作目录
 		err := CheckRepo()
 		if err != nil {
-			return Done{Next: ViewError, Error: err}
+			return Next{Next: ViewError, Error: err}
 		}
 
 		// 检查是否存在 暂存的文件
 		err = HasStagedFiles()
 		if err != nil {
-			return Done{Next: ViewError, Error: err}
+			return Next{Next: ViewError, Error: err}
 		}
 		return nil
 	}
@@ -57,7 +57,7 @@ func (m CommitModel) Inputs() tea.Msg {
 func (m CommitModel) Commit() tea.Msg {
 	sob, err := SignedOffBy()
 	if err != nil {
-		return Done{Error: err}
+		return Next{Error: err}
 	}
 
 	msg := CommitMessage{
@@ -78,9 +78,9 @@ func (m CommitModel) Commit() tea.Msg {
 
 func (m CommitModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg.(type) {
-	case Done: // If the view returns a done message, it means that the stage has been processed
-		m.Error = msg.(Done).Error
-		m.Index = msg.(Done).Next
+	case Next: // If the view returns a done message, it means that the stage has been processed
+		m.Error = msg.(Next).Error
+		m.Index = msg.(Next).Next
 
 		// some special views need to determine the state of the data to update
 		switch m.Index {

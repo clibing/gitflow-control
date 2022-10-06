@@ -88,7 +88,7 @@ func (m SubmitModel) View() string {
 	//footer := committingFooterStyle.Render(m.Msg.Footer+"\n"+m.Msg.SOB) + "\n"
 
 	//msg := m.Spinner.View()
-	//if m.Done {
+	//if m.Next {
 	//	if m.Err != nil {
 	//		msg = committingFailedStyle.Render("( ●●● ) Commit Failed: \n" + m.Err.Error())
 	//	} else {
