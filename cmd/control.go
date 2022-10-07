@@ -27,7 +27,7 @@ func (c *Control) Init() {
 	subApps[6] = c.newBranchCliApp(internal.Chore)
 	subApps[7] = c.newBranchCliApp("hotfix")
 	subApps[8] = c.CommitApp()
-	subApps[9] = checkMessageApp()
+	subApps[9] = c.CheckMessageApp()
 }
 
 func (m *Control) DefaultCliApp() *cli.App {
@@ -150,6 +150,21 @@ func (c *Control) CommitApp() *cli.App {
 
 }
 
-func checkMessageApp() *cli.App {
-	return nil
+func (c *Control) CheckMessageApp() *cli.App {
+	return &cli.App{
+		Name:                 "commit-msg",
+		Usage:                "Commit message hook",
+		UsageText:            "commit-msg FILE",
+		Version:              fmt.Sprintf("%s %s %s", c.Version, c.BuildDate, c.BuildCommit),
+		Authors:              []*cli.Author{{Name: "clibing", Email: "wmsjhappy@gmail.com"}},
+		Copyright:            "Copyright (c) " + time.Now().Format("2006") + " clibing, All rights reserved.",
+		EnableBashCompletion: true,
+		Action: func(c *cli.Context) error {
+			if c.NArg() != 1 {
+				return cli.ShowAppHelp(c)
+			}
+			return internal.CheckCommitMessage(c.Args().First())
+		},
+	}
+}
 }

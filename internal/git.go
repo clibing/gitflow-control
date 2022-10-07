@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"regexp"
 )
 
 const (
@@ -20,6 +21,17 @@ const (
 
 const commitMessageCheckPattern = `^(feat|fix|docs|style|refactor|test|chore|perf|hotfix)\((\S.*)\):\s(\S.*)|^Merge.*`
 
+const commitMessageCheckFailedMsg = `
+╭──────────────────────────────────────────────────╮
+│                                                  │
+│    ✗ The commit message is not standardized.     │
+│    ✗ It must match the regular expression:       │
+│                                                  │
+│    ^(feat|fix|docs|style|refactor|test|chore|    │
+│     perf|hotfix)\((\S.*)\):\s(\S.*)|^Merge.*     │
+│                                                  │
+╰──────────────────────────────────────────────────╯`
+
 var CommitMessageType = map[string]string{
 	Feat:     "新功能（feature）",
 	Fix:      "修补bug",
@@ -30,6 +42,8 @@ var CommitMessageType = map[string]string{
 	Chore:    "构建过程或辅助工具的变动",
 	Hotfix:   "紧急修复线上bug",
 }
+
+
 
 func Version() (string, error) {
 	msg, err := ExecGit("version")
@@ -207,5 +221,16 @@ func Commit(msg CommitMessage) error {
 
 func CheckCommitMessage(message string) error {
 	// 增加 commit-msg hook时使用
+	reg := regexp.MustCompile(commitMessageCheckPattern)
+	bs, err := ioutil.ReadFile(message)
+	if err != nil {
+		return err
+	}
+
+	msgs := reg.FindStringSubmatch(string(bs))
+	if len(msgs) != 4 {
+		return fmt.Errorf(commitMessageCheckFailedMsg)
+	}
+
 	return nil
 }
