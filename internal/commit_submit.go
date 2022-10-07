@@ -101,44 +101,34 @@ func (m SubmitModel) View() string {
 	}
 
 	return committingStyle.Render(lipgloss.JoinVertical(lipgloss.Left, header, body, footer, msg))
-
-	//msg := "Submit...s"
-	//if m.Done {
-	//	if m.Err != nil {
-	//		msg = "Commit Failed: \n" + m.Err.Error()
-	//	} else {
-	//		msg = "Always code as if the guy who ends up maintaining your \ncode will be a violent psychopath who knows where you live..."
-	//	}
-	//}
-	//return  msg
 }
 
 func NewSubmitModel() SubmitModel {
-	//s := spinner.NewModel()
-	//s.Spinner = spinner.Spinner{
-	//	Frames: []string{
-	//		"(●    ) C",
-	//		"( ●   ) Co",
-	//		"(  ●  ) Com",
-	//		"(   ● ) Comm",
-	//		"(    ●) Commi",
-	//		"(    ●) Commit",
-	//		"(   ● ) Committ",
-	//		"(  ●  ) Committi",
-	//		"( ●   ) Committin",
-	//		"(●    ) Committing",
-	//		"( ●   ) Committing.",
-	//		"(  ●  ) Committing..",
-	//		"(   ● ) Committing...",
-	//		"(    ●) Committing...",
-	//		"(   ● ) Committing...",
-	//		"(  ●  ) Committing...",
-	//		"( ●   ) Committing...",
-	//		"(●    ) Committing...",
-	//	},
-	//	FPS: time.Second / 15,
-	//}
-	//s.Style = lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{Light: "#25A065", Dark: "#19F896"}).Bold(true)
-	//return SubmitModel{Spinner: s}
-	return SubmitModel{}
+	s := spinner.New()
+	s.Spinner = spinner.Spinner{
+		Frames: []string{
+			"(●    ) C",
+			"( ●   ) Co",
+			"(  ●  ) Com",
+			"(   ● ) Comm",
+			"(    ●) Commi",
+			"(    ●) Commit",
+			"(   ● ) Committ",
+			"(  ●  ) Committi",
+			"( ●   ) Committin",
+			"(●    ) Committing",
+			"( ●   ) Committing.",
+			"(  ●  ) Committing..",
+			"(   ● ) Committing...",
+			"(    ●) Committing...",
+			"(   ● ) Committing...",
+			"(  ●  ) Committing...",
+			"( ●   ) Committing...",
+			"(●    ) Committing...",
+		},
+		FPS: time.Second / 15,
+	}
+	s.Style = lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{Light: "#25A065", Dark: "#19F896"}).Bold(true)
+	return SubmitModel{Spinner: s}
+	//return SubmitModel{}
 }
