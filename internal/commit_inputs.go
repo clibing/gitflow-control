@@ -212,7 +212,7 @@ func NewInputsModel() InputsModel {
 	for i := range m.Inputs {
 		var iwc InputWithCheck
 
-		iwc.Input = textinput.NewModel()
+		iwc.Input = textinput.New()
 		iwc.Input.CursorStyle = inputsCursorStyle
 		iwc.Input.CharLimit = 128
 
@@ -225,7 +225,7 @@ func NewInputsModel() InputsModel {
 			iwc.Input.Focus()
 			iwc.Checker = func(s string) error {
 				if strings.TrimSpace(s) == "" {
-					return errors.New("Scope cannot be empty")
+					return errors.New("scope cannot be empty")
 				}
 				return nil
 			}
@@ -235,7 +235,7 @@ func NewInputsModel() InputsModel {
 			iwc.Input.Placeholder = "A very short description of the change."
 			iwc.Checker = func(s string) error {
 				if strings.TrimSpace(s) == "" {
-					return errors.New("Subject cannot be empty")
+					return errors.New("subject cannot be empty")
 				}
 				return nil
 			}
@@ -252,7 +252,7 @@ func NewInputsModel() InputsModel {
 		m.Inputs[i] = iwc
 	}
 
-	m.ErrSpinner = spinner.NewModel()
+	m.ErrSpinner = spinner.New()
 	m.ErrSpinner.Spinner = spinner.Spinner{
 		Frames: []string{
 			// "❯   "

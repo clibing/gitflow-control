@@ -25,7 +25,26 @@ func main() {
 	}
 	control.Init()
 
-	control.CommitApp().Run(os.Args)
+	err := control.CheckMessageApp().Run(os.Args)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+}
+func main2() {
+
+	control := &cmd.Control{
+		Version:     version,
+		BuildDate:   buildDate,
+		BuildCommit: buildCommit,
+	}
+	control.Init()
+
+	err := control.CommitApp().Run(os.Args)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }
 
 func main1() {

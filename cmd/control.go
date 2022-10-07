@@ -13,21 +13,31 @@ type Control struct {
 	Version     string
 	BuildDate   string
 	BuildCommit string
+	Config      *internal.Config // 配置信息
 }
+
 
 var subApps = make([]*cli.App, 10)
 
-func (c *Control) Init() {
-	subApps[0] = c.newBranchCliApp(internal.Feat)
-	subApps[1] = c.newBranchCliApp(internal.Fix)
-	subApps[2] = c.newBranchCliApp(internal.Docs)
-	subApps[3] = c.newBranchCliApp(internal.Style)
-	subApps[4] = c.newBranchCliApp(internal.Refactor)
-	subApps[5] = c.newBranchCliApp(internal.Test)
-	subApps[6] = c.newBranchCliApp(internal.Chore)
-	subApps[7] = c.newBranchCliApp("hotfix")
-	subApps[8] = c.CommitApp()
-	subApps[9] = c.CheckMessageApp()
+func (m *Control) Init() {
+	subApps[0] = m.newBranchCliApp(internal.Feat)
+	subApps[1] = m.newBranchCliApp(internal.Fix)
+	subApps[2] = m.newBranchCliApp(internal.Docs)
+	subApps[3] = m.newBranchCliApp(internal.Style)
+	subApps[4] = m.newBranchCliApp(internal.Refactor)
+	subApps[5] = m.newBranchCliApp(internal.Test)
+	subApps[6] = m.newBranchCliApp(internal.Chore)
+	subApps[7] = m.newBranchCliApp("hotfix")
+	subApps[8] = m.CommitApp()
+	subApps[9] = m.CheckMessageApp()
+	m.Config = &internal.Config{
+		Issue: &internal.Issue{
+			FirstEnable: false,
+			LeftMarker:  "[",
+			RightMarker: "]",
+			Value:       make([]string, 10),
+		},
+	}
 }
 
 func (m *Control) DefaultCliApp() *cli.App {
@@ -92,12 +102,12 @@ func (m *Control) Uninstall() *cli.Command {
 	}
 }
 
-func (c *Control) newBranchCliApp(ct string) *cli.App {
+func (m *Control) newBranchCliApp(ct string) *cli.App {
 	return &cli.App{
-		Name:                 "git-" + string(ct),
+		Name:                 "git-" + ct,
 		Usage:                fmt.Sprintf("Create %s branch", ct),
 		UsageText:            fmt.Sprintf("git %s BRANCH", ct),
-		Version:              fmt.Sprintf("%s %s %s", c.Version, c.BuildDate, c.BuildCommit),
+		Version:              fmt.Sprintf("%s %s %s", m.Version, m.BuildDate, m.BuildCommit),
 		Authors:              []*cli.Author{{Name: "clibing", Email: "wmsjhappy@gmail.com"}},
 		Copyright:            "Copyright (c) " + time.Now().Format("2006") + " clibing, All rights reserved.",
 		EnableBashCompletion: true,
@@ -105,14 +115,14 @@ func (c *Control) newBranchCliApp(ct string) *cli.App {
 			if c.NArg() != 1 {
 				return cli.ShowAppHelp(c)
 			}
-			branhName := fmt.Sprintf("%s/%s", ct, c.Args().First())
-			_, err := internal.Switch(branhName)
+			branchName := fmt.Sprintf("%s/%s", ct, c.Args().First())
+			_, err := internal.Switch(branchName)
 			return err
 		},
 	}
 }
 
-func (c *Control) GetBranchCliApp(binName string) *cli.App {
+func (m *Control) GetBranchCliApp(binName string) *cli.App {
 	for _, app := range subApps {
 		if app != nil && binName == app.Name {
 			return app
@@ -121,12 +131,12 @@ func (c *Control) GetBranchCliApp(binName string) *cli.App {
 	return nil
 }
 
-func (c *Control) CommitApp() *cli.App {
+func (m *Control) CommitApp() *cli.App {
 	return &cli.App{
 		Name:                 "git-ci",
 		Usage:                "Interactive commit",
 		UsageText:            "git ci",
-		Version:              fmt.Sprintf("%s %s %s", c.Version, c.BuildDate, c.BuildCommit),
+		Version:              fmt.Sprintf("%s %s %s", m.Version, m.BuildDate, m.BuildCommit),
 		Authors:              []*cli.Author{{Name: "clibing", Email: "wmsjhappy@gmail.com"}},
 		Copyright:            "Copyright (c) " + time.Now().Format("2006") + " clibing, All rights reserved.",
 		EnableBashCompletion: true,
@@ -135,7 +145,7 @@ func (c *Control) CommitApp() *cli.App {
 				return cli.ShowAppHelp(c)
 			}
 
-			m := internal.CommitModel{
+			model := internal.CommitModel{
 				Views: []tea.Model{
 					internal.NewSelectorModel(),
 					internal.NewInputsModel(),
@@ -144,18 +154,18 @@ func (c *Control) CommitApp() *cli.App {
 				},
 			}
 
-			return tea.NewProgram(&m).Start()
+			return tea.NewProgram(&model).Start()
 		},
 	}
 
 }
 
-func (c *Control) CheckMessageApp() *cli.App {
+func (m *Control) CheckMessageApp() *cli.App {
 	return &cli.App{
 		Name:                 "commit-msg",
 		Usage:                "Commit message hook",
 		UsageText:            "commit-msg FILE",
-		Version:              fmt.Sprintf("%s %s %s", c.Version, c.BuildDate, c.BuildCommit),
+		Version:              fmt.Sprintf("%s %s %s", m.Version, m.BuildDate, m.BuildCommit),
 		Authors:              []*cli.Author{{Name: "clibing", Email: "wmsjhappy@gmail.com"}},
 		Copyright:            "Copyright (c) " + time.Now().Format("2006") + " clibing, All rights reserved.",
 		EnableBashCompletion: true,
@@ -163,7 +173,33 @@ func (c *Control) CheckMessageApp() *cli.App {
 			if c.NArg() != 1 {
 				return cli.ShowAppHelp(c)
 			}
-			return internal.CheckCommitMessage(c.Args().First())
+			return internal.CheckCommitMessage(c.Args().First(), m.Config)
+		},
+	}
+}
+
+func (m *Control) IssueApp() *cli.App {
+	return &cli.App{
+		Name:                 "git-issue",
+		Usage:                "git issue",
+		UsageText:            "git issue command #ISSUE",
+		Version:              fmt.Sprintf("%s %s %s", m.Version, m.BuildDate, m.BuildCommit),
+		Authors:              []*cli.Author{{Name: "clibing", Email: "wmsjhappy@gmail.com"}},
+		Copyright:            "Copyright (c) " + time.Now().Format("2006") + " clibing, All rights reserved.",
+		EnableBashCompletion: true,
+		Action: func(c *cli.Context) error {
+			if c.NArg() != 0 {
+				return cli.ShowAppHelp(c)
+			}
+			return internal.CheckCommitMessage(c.Args().First(), m.Config)
+		},
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:    "command",
+				Aliases: []string{"c"},
+				Usage:   "-c append|remove|clean",
+				Value:   "append",
+			},
 		},
 	}
 }

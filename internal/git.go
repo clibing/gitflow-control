@@ -19,18 +19,32 @@ const (
 	Hotfix   string = "hotfix"
 )
 
-const commitMessageCheckPattern = `^(feat|fix|docs|style|refactor|test|chore|perf|hotfix)\((\S.*)\):\s(\S.*)|^Merge.*`
+const commitMessageCheckPatternV1 = `^(feat|fix|docs|style|refactor|test|chore|perf|hotfix)\((\S.*)\):\s(\S.*)|^Merge.*`
+const commitMessageCheckPatternV2 = `^\%s[a-zA-Z]+\-[0-9]+\%s(feat|fix|docs|style|refactor|test|chore|perf|hotfix)\((\S.*)\):\s(\S.*)|^Merge.*`
 
-const commitMessageCheckFailedMsg = `
-╭──────────────────────────────────────────────────╮
-│                                                  │
-│    ✗ The commit message is not standardized.     │
-│    ✗ It must match the regular expression:       │
-│                                                  │
-│    ^(feat|fix|docs|style|refactor|test|chore|    │
-│     perf|hotfix)\((\S.*)\):\s(\S.*)|^Merge.*     │
-│                                                  │
-╰──────────────────────────────────────────────────╯`
+const commitMessageCheckFailedMsgV1 = `
+╭────────────────────────────────────────────────────────────────────────────────────────╮
+│ ✗ The commit message is not standardized.                                              │
+│ ✗ It must match the regular expression:                                                │
+│                                                                                        │
+│ ^(feat|fix|docs|style|refactor|test|chore|perf|hotfix)\((\S.*)\):\s(\S.*)|^Merge.*     │
+╰────────────────────────────────────────────────────────────────────────────────────────╯`
+
+const commitMessageCheckFailedMsgV2 = `
+╭─────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
+│ ✗ The commit message is not standardized.                                                                       │
+│ ✗ It must match the regular expression:                                                                         │
+│                                                                                                                 │
+│ ^\%s[a-zA-Z]+\-[0-9]+\%s(feat|fix|docs|style|refactor|test|chore|perf|hotfix)\((\S.*)\):\s(\S.*)|^Merge.*         │
+│                                                                                                                 │
+│ example:                                                                                                        │
+│ [BACKEND-001]chore(pom): add pom dep version                                                                    │
+│                                                                                                                 │
+│ add pom dep version                                                                                             │
+│                                                                                                                 │
+│ Signed-off-by: clibing <wmsjhappy@gmail.com>                                                                    │
+│                                                                                                                 │
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯`
 
 var CommitMessageType = map[string]string{
 	Feat:     "新功能（feature）",
@@ -42,8 +56,6 @@ var CommitMessageType = map[string]string{
 	Chore:    "构建过程或辅助工具的变动",
 	Hotfix:   "紧急修复线上bug",
 }
-
-
 
 func Version() (string, error) {
 	msg, err := ExecGit("version")
@@ -219,17 +231,27 @@ func Commit(msg CommitMessage) error {
 	return err
 }
 
-func CheckCommitMessage(message string) error {
+func CheckCommitMessage(message string, config *Config) error {
+	rg := commitMessageCheckPatternV1
+	if config.Issue.FirstEnable {
+		rg = fmt.Sprintf(commitMessageCheckPatternV2, config.Issue.LeftMarker, config.Issue.RightMarker)
+	}
 	// 增加 commit-msg hook时使用
-	reg := regexp.MustCompile(commitMessageCheckPattern)
+	reg := regexp.MustCompile(rg)
 	bs, err := ioutil.ReadFile(message)
 	if err != nil {
 		return err
 	}
 
 	msgs := reg.FindStringSubmatch(string(bs))
-	if len(msgs) != 4 {
-		return fmt.Errorf(commitMessageCheckFailedMsg)
+	if config.Issue.FirstEnable {
+		if len(msgs) != 4 {
+			return fmt.Errorf(commitMessageCheckFailedMsgV2, config.Issue.LeftMarker, config.Issue.RightMarker)
+		}
+	} else {
+		if len(msgs) != 4 {
+			return fmt.Errorf(commitMessageCheckFailedMsgV1)
+		}
 	}
 
 	return nil

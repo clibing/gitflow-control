@@ -9,8 +9,6 @@ import (
 	"io"
 )
 
-const listHeight = 14
-
 var (
 	selectorTitleStyle = lipgloss.NewStyle().
 		Foreground(lipgloss.AdaptiveColor{Light: "#2E2E2E", Dark: "#DDDDDD"}).
@@ -56,9 +54,9 @@ func (d SelectorDelegate) Render(w io.Writer, m list.Model, index int, listItem 
 	}
 	str := fmt.Sprintf("%d. (%s)%s", index+1, i.CommitType, i.Title)
 	if index == m.Index() {
-		_, _ = fmt.Fprintf(w, str)
+		_, _ = fmt.Fprintf(w, selectorSelectedStyle.Render(str))
 	} else {
-		_, _ = fmt.Fprintf(w, Gray.Render(str))
+		_, _ = fmt.Fprintf(w, selectorNormalStyle.Render(str))
 	}
 
 }
@@ -147,9 +145,7 @@ func NewSelectorModel() SelectorModel {
 			Title:      CommitMessageType[Hotfix],
 		},
 	}
-	const defaultWidth = 20
-
-	l := list.New(items, SelectorDelegate{}, defaultWidth, listHeight)
+	l := list.New(items, SelectorDelegate{}, 20, 12)
 	l.Title = "Select Commit Type"
 	l.SetShowStatusBar(false)
 	l.SetFilteringEnabled(false)

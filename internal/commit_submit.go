@@ -1,10 +1,12 @@
 package internal
 
 import (
+	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"time"
 )
+
 var (
 	committingStyle = lipgloss.NewStyle().
 		Padding(1, 1, 1, 2)
@@ -40,16 +42,18 @@ var (
 		Bold(true).
 		Foreground(lipgloss.AdaptiveColor{Light: "#D63B3A", Dark: "#D63B3A"})
 )
+
 /**
  * 提交
  */
 
 type SubmitModel struct {
 	Err     error
-	Done    bool
+	Next    bool
 	Msg     CommitMessage
-	//Spinner spinner.Model
+	Spinner spinner.Model
 }
+
 func (m SubmitModel) Init() tea.Cmd {
 	return nil
 }
@@ -63,50 +67,50 @@ func (m SubmitModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, nil
 		}
 	case CommitMessage:
-		m.Msg= msg
+		m.Msg = msg
 		return m, func() tea.Msg {
 			time.Sleep(time.Second)
 			return Commit(msg)
 		}
 	case error:
-		m.Done = true
+		m.Next = true
 		m.Err = msg
 		return m, tea.Quit
 	case nil:
-		m.Done = true
+		m.Next = true
 		return m, tea.Quit
 	default:
 		var cmd tea.Cmd
-		//m.Spinner, cmd = m.Spinner.Update(msg)
+		m.Spinner, cmd = m.Spinner.Update(msg)
 		return m, cmd
 	}
 }
 
 func (m SubmitModel) View() string {
-	//header := committingTypeStyle.Render(m.Msg.Type) + committingScopeStyle.Render("("+m.Msg.Scope+")") + committingSubjectStyle.Render(": "+m.Msg.Subject) + "\n"
-	//body := committingBodyStyle.Render(m.Msg.Body)
-	//footer := committingFooterStyle.Render(m.Msg.Footer+"\n"+m.Msg.SOB) + "\n"
+	header := committingTypeStyle.Render(m.Msg.Type) + committingScopeStyle.Render("("+m.Msg.Scope+")") + committingSubjectStyle.Render(": "+m.Msg.Subject) + "\n"
+	body := committingBodyStyle.Render(m.Msg.Body)
+	footer := committingFooterStyle.Render(m.Msg.Footer+"\n"+m.Msg.SOB) + "\n"
 
-	//msg := m.Spinner.View()
-	//if m.Next {
-	//	if m.Err != nil {
-	//		msg = committingFailedStyle.Render("( ●●● ) Commit Failed: \n" + m.Err.Error())
-	//	} else {
-	//		msg = committingSuccessStyle.Render("◉◉◉◉ Always code as if the guy who ends up maintaining your \n◉◉◉◉ code will be a violent psychopath who knows where you live...")
-	//	}
-	//}
-	//
-	//return committingStyle.Render(lipgloss.JoinVertical(lipgloss.Left, header, body, footer, msg))
-
-	msg := "Submit...s"
-	if m.Done {
+	msg := m.Spinner.View()
+	if m.Next {
 		if m.Err != nil {
-			msg = "Commit Failed: \n" + m.Err.Error()
+			msg = committingFailedStyle.Render("( ●●● ) Commit Failed: \n" + m.Err.Error())
 		} else {
-			msg = "Always code as if the guy who ends up maintaining your \ncode will be a violent psychopath who knows where you live..."
+			msg = committingSuccessStyle.Render("◉◉◉◉ Always code as if the guy who ends up maintaining your \n◉◉◉◉ code will be a violent psychopath who knows where you live...")
 		}
 	}
-	return  msg
+
+	return committingStyle.Render(lipgloss.JoinVertical(lipgloss.Left, header, body, footer, msg))
+
+	//msg := "Submit...s"
+	//if m.Done {
+	//	if m.Err != nil {
+	//		msg = "Commit Failed: \n" + m.Err.Error()
+	//	} else {
+	//		msg = "Always code as if the guy who ends up maintaining your \ncode will be a violent psychopath who knows where you live..."
+	//	}
+	//}
+	//return  msg
 }
 
 func NewSubmitModel() SubmitModel {
