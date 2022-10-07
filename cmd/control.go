@@ -167,4 +167,3 @@ func (c *Control) CheckMessageApp() *cli.App {
 		},
 	}
 }
-}
