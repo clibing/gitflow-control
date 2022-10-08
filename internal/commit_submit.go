@@ -110,7 +110,6 @@ func (m SubmitModel) View() string {
 			msg = committingSuccessStyle.Render("◉◉◉◉ Always code as if the guy who ends up maintaining your \n◉◉◉◉ code will be a violent psychopath who knows where you live...")
 		}
 	}
-
 	return committingStyle.Render(lipgloss.JoinVertical(lipgloss.Left, issue, header, body, footer, msg))
 }
 
