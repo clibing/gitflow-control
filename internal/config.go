@@ -114,24 +114,23 @@ func GetConfig() *Config {
 }
 
 func RequiredFooter() bool {
-	var result bool
 	switch config.Mode {
+	case "first":
+		return true
+	case "standard":
+		return false
+	// case "auto":
 	case "auto":
 		url, err := GetOriginUrl()
-		panic(err)
-		for _, v := range config.Issue.PrefixUrl {
-			if strings.HasPrefix(v, url) {
-				result = true
+		if err != nil {
+			panic(err)
+		}
+		for _, prefix := range config.Issue.PrefixUrl {
+			if strings.HasPrefix(url, prefix) {
+				return true
 			}
 		}
-		result = false
-		break
-	case "first":
-		result = true
-		break
-	case "standard":
-		result = false
-		break
+		return false
 	}
-	return result
+	return false
 }
