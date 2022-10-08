@@ -157,7 +157,6 @@ func HasStagedFiles() error {
 }
 
 type CommitMessage struct {
-	Issue   string // 问题
 	Type    string // 已经初始化
 	Scope   string // 本地提交影响的范围，例如:数据层、控制层、视图层等等，视项目不同而不同。
 	Subject string // 不超过50个字符
@@ -171,7 +170,7 @@ type CommentMessageType struct {
 	Note string
 }
 
-func Commit(msg CommitMessage) error {
+func Commit(msg CommitMessage, config *Config) error {
 	if err := HasStagedFiles(); err != nil {
 		return err
 	}
@@ -203,26 +202,12 @@ func Commit(msg CommitMessage) error {
 	     * <footer>
 		 *
 	*/
-	//footer := msg.Footer
 
-	//footerMessage := ""
-	//if len(footer.Value) > 0 {
-	//	footerMessage = fmt.Sprintf("BREAKING CHANGE: %s", footer.Value)
-	//}
-	//
-	//if len(footer.Closes) > 0 {
-	//	issues := make([]string, len(footer.Closes))
-	//	for _, issue := range footer.Closes {
-	//		if strings.HasPrefix(issue, "#") {
-	//			issues = append(issues, issue)
-	//		} else {
-	//			issues = append(issues, fmt.Sprintf("#%s", issue))
-	//		}
-	//	}
-	//	footerMessage = fmt.Sprintf("%s\n\nClosesCloses: %s", footerMessage, strings.Join(issues, ","))
-	//}
-
-	_, err = fmt.Fprintf(f, "[%s]%s(%s): %s\n\n%s\n\n%s\n\n%s\n", msg.Issue, msg.Type, msg.Scope, msg.Subject, msg.Body, msg.Footer, msg.SOB)
+	if config.Issue.FirstEnable {
+		_, err = fmt.Fprintf(f, "%s%s%s%s(%s): %s\n\n%s\n\n%s\n\n%s\n", config.Issue.LeftMarker, msg.Footer, config.Issue.RightMarker, msg.Type, msg.Scope, msg.Subject, msg.Body, msg.Footer, msg.SOB)
+	} else {
+		_, err = fmt.Fprintf(f, "%s(%s): %s\n\n%s\n\n%s\n\n%s\n", msg.Type, msg.Scope, msg.Subject, msg.Body, msg.Footer, msg.SOB)
+	}
 	if err != nil {
 		return err
 	}

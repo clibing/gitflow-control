@@ -2,8 +2,9 @@ package cmd
 
 import (
 	"fmt"
-	tea "github.com/charmbracelet/bubbletea"
 	"time"
+
+	tea "github.com/charmbracelet/bubbletea"
 
 	"github.com/clibing/gitflow-control/internal"
 	"github.com/urfave/cli/v2"
@@ -15,7 +16,6 @@ type Control struct {
 	BuildCommit string
 	Config      *internal.Config // 配置信息
 }
-
 
 var subApps = make([]*cli.App, 10)
 
@@ -35,7 +35,7 @@ func (m *Control) Init() {
 			FirstEnable: false,
 			LeftMarker:  "[",
 			RightMarker: "]",
-			Value:       make([]string, 10),
+			Value:       make([]internal.Value, 10),
 		},
 	}
 }
@@ -178,6 +178,7 @@ func (m *Control) CheckMessageApp() *cli.App {
 	}
 }
 
+// TODO issue的管理
 func (m *Control) IssueApp() *cli.App {
 	return &cli.App{
 		Name:                 "git-issue",

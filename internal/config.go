@@ -12,6 +12,6 @@ type Issue struct {
 }
 
 type Value struct {
-	Number string `yaml:"name"` // issue 号
-	Title string `yaml:"title"` // issue 描述
+	Number string `yaml:"name"`  // issue 号
+	Title  string `yaml:"title"` // issue 描述
 }

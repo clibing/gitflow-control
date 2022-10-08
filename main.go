@@ -16,7 +16,7 @@ var (
 	buildCommit string
 )
 
-func main() {
+func main0() {
 
 	control := &cmd.Control{
 		Version:     version,
@@ -47,7 +47,7 @@ func main2() {
 	}
 }
 
-func main1() {
+func main() {
 
 	control := &cmd.Control{
 		Version:     version,
