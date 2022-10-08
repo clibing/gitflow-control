@@ -1,10 +1,11 @@
 package internal
 
 import (
+	"strings"
+
 	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
-	"strings"
 )
 
 const (
@@ -12,10 +13,11 @@ const (
 	ViewInputCommitMessage        // 输入提交所需信息
 	ViewCommitMessage             // 调动git commit 提交信息
 	ViewError                     // 错误
+	ViewIssueSelect               // 展示 issue 选择
 )
 
 type CommitModel struct {
-	Views  []tea.Model // 提交时所需要的 tea model
+	Views []tea.Model // 提交时所需要的 tea model
 	Index int         // 当前展示的view
 	Error error       // 错误信息
 }

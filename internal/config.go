@@ -21,12 +21,7 @@ type Issue struct {
 	PrefixUrl   []string `yaml:"prefix-url"`   // 如果配置默认为自动匹配模式
 	LeftMarker  string   `yaml:"left-marker"`  // issue号 左边默认标记
 	RightMarker string   `yaml:"right-marker"` // issue号 右边默认标记
-	Value       []Value  `yaml:"value"`        // issue号 或者 jira号
-}
-
-type Value struct {
-	Number string `yaml:"name"`  // issue 号
-	Title  string `yaml:"title"` // issue 描述
+	Value       string   `yaml:"value"`        // issue号 或者 jira号
 }
 
 func init() {
@@ -92,18 +87,12 @@ func checkFile(f string) (bool, error) {
 }
 
 func initDefaultConfig() {
-	v := make([]Value, 0)
-	v = append(v, Value{
-		Number: "",
-		Title:  "",
-	})
-
 	config = &Config{
 		Mode: "auto",
 		Issue: &Issue{
 			LeftMarker:  "",
 			RightMarker: "",
-			Value:       v,
+			Value:       "",
 		},
 	}
 
@@ -123,7 +112,7 @@ func RequiredFooter() bool {
 	case "auto":
 		url, err := GetOriginUrl()
 		if err != nil {
-			panic(err)
+			return false
 		}
 		for _, prefix := range config.Issue.PrefixUrl {
 			if strings.HasPrefix(url, prefix) {
@@ -133,4 +122,8 @@ func RequiredFooter() bool {
 		return false
 	}
 	return false
+}
+
+func GetLatestIssue() string {
+	return config.Issue.Value
 }

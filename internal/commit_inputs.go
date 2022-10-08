@@ -253,9 +253,12 @@ func NewInputsModel() InputsModel {
 					return nil
 				}
 				if strings.TrimSpace(s) == "" {
-					return errors.New("Footer cannot be empty")
+					return errors.New("footer cannot be empty")
 				}
 				return nil
+			}
+			if RequiredFooter() {
+				iwc.Input.SetValue(GetLatestIssue())
 			}
 		}
 
