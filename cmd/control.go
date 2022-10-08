@@ -30,14 +30,7 @@ func (m *Control) Init() {
 	subApps[7] = m.newBranchCliApp("hotfix")
 	subApps[8] = m.CommitApp()
 	subApps[9] = m.CheckMessageApp()
-	m.Config = &internal.Config{
-		Issue: &internal.Issue{
-			FirstEnable: false,
-			LeftMarker:  "[",
-			RightMarker: "]",
-			Value:       make([]internal.Value, 10),
-		},
-	}
+	m.Config = internal.GetConfig()
 }
 
 func (m *Control) DefaultCliApp() *cli.App {

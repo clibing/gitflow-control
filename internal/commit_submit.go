@@ -1,46 +1,47 @@
 package internal
 
 import (
+	"time"
+
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"time"
 )
 
 var (
 	committingStyle = lipgloss.NewStyle().
-		Padding(1, 1, 1, 2)
+			Padding(1, 1, 1, 2)
 
 	committingTypeStyle = lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.AdaptiveColor{Light: "#FFFDF5", Dark: "#FFFDF5"}).
-		Background(lipgloss.AdaptiveColor{Light: "#5B44FF", Dark: "#7653FF"})
+				Bold(true).
+				Foreground(lipgloss.AdaptiveColor{Light: "#FFFDF5", Dark: "#FFFDF5"}).
+				Background(lipgloss.AdaptiveColor{Light: "#5B44FF", Dark: "#7653FF"})
 
 	committingScopeStyle = lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.AdaptiveColor{Light: "#FFFDF5", Dark: "#FFFDF5"}).
-		Background(lipgloss.AdaptiveColor{Light: "#1FD314", Dark: "#2AD67F"})
+				Bold(true).
+				Foreground(lipgloss.AdaptiveColor{Light: "#FFFDF5", Dark: "#FFFDF5"}).
+				Background(lipgloss.AdaptiveColor{Light: "#1FD314", Dark: "#2AD67F"})
 
 	committingSubjectStyle = lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.AdaptiveColor{Light: "#FFFDF5", Dark: "#FFFDF5"}).
-		Background(lipgloss.AdaptiveColor{Light: "#E11C9C", Dark: "#EE6FF8"})
+				Bold(true).
+				Foreground(lipgloss.AdaptiveColor{Light: "#FFFDF5", Dark: "#FFFDF5"}).
+				Background(lipgloss.AdaptiveColor{Light: "#E11C9C", Dark: "#EE6FF8"})
 
 	committingBodyStyle = lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.AdaptiveColor{Light: "#25A065", Dark: "#2AD67F"})
+				Bold(true).
+				Foreground(lipgloss.AdaptiveColor{Light: "#25A065", Dark: "#2AD67F"})
 
 	committingFooterStyle = lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.AdaptiveColor{Light: "#25A065", Dark: "#2AD67F"})
+				Bold(true).
+				Foreground(lipgloss.AdaptiveColor{Light: "#25A065", Dark: "#2AD67F"})
 
 	committingSuccessStyle = lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.AdaptiveColor{Light: "#25A065", Dark: "#2AD67F"})
+				Bold(true).
+				Foreground(lipgloss.AdaptiveColor{Light: "#25A065", Dark: "#2AD67F"})
 
 	committingFailedStyle = lipgloss.NewStyle().
-		Bold(true).
-		Foreground(lipgloss.AdaptiveColor{Light: "#D63B3A", Dark: "#D63B3A"})
+				Bold(true).
+				Foreground(lipgloss.AdaptiveColor{Light: "#D63B3A", Dark: "#D63B3A"})
 )
 
 /**
@@ -70,7 +71,7 @@ func (m SubmitModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.Msg = msg
 		return m, func() tea.Msg {
 			time.Sleep(time.Second)
-			return Commit(msg)
+			return Commit(msg, GetConfig())
 		}
 	case error:
 		m.Next = true
