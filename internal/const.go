@@ -3,7 +3,9 @@ package internal
 import "github.com/charmbracelet/lipgloss"
 
 const (
-	BinName = "gitflow-control"
+	BinName    = "gitflow-control"
+	ConfigYaml = "control.yaml"
+	HomeDir    = "." + BinName
 )
 
 var (

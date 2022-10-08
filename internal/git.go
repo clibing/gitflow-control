@@ -35,7 +35,7 @@ const commitMessageCheckFailedMsgV2 = `
 │ ✗ The commit message is not standardized.                                                                       │
 │ ✗ It must match the regular expression:                                                                         │
 │                                                                                                                 │
-│ ^\%s[a-zA-Z]+\-[0-9]+\%s[\n\r]+(feat|fix|docs|style|refactor|test|chore|perf|hotfix)\((\S.*)\):\s(\S.*)|^Merge.*   │
+│ ^\%s[a-zA-Z]+\-[0-9]+\%s[\n\r]+(feat|fix|docs|style|refactor|test|chore|perf|hotfix)\((\S.*)\):\s(\S.*)|^Merge.*  │
 │                                                                                                                 │
 │ example:                                                                                                        │
 │ [BACKEND-001]                                                                                                   │
@@ -232,6 +232,7 @@ func CheckCommitMessage(message string, config *Config) error {
 
 	msgs := reg.FindStringSubmatch(string(bs))
 	if config.Issue.FirstEnable {
+		fmt.Println("---", msgs, len(msgs))
 		if len(msgs) != 4 {
 			return fmt.Errorf(commitMessageCheckFailedMsgV2, config.Issue.LeftMarker, config.Issue.RightMarker)
 		}

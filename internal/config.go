@@ -9,9 +9,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-const CONFIG_YAML = ".control.yaml"
-
-var config Config
+var config *Config
 
 type Config struct {
 	Issue *Issue `yaml:"issue"` // 用于快速输入jira号
@@ -48,10 +46,12 @@ func init() {
 		panic(fmt.Errorf("读取配置文件异常, err: %s", err))
 	}
 	// config.Issue.Value = make([]*Value, 0)
-	err = yaml.Unmarshal(data, &config)
+	var c Config
+	err = yaml.Unmarshal(data, &c)
 	if err != nil {
 		panic(fmt.Errorf("加载配置文件异常, err: %s", err))
 	}
+	config = &c
 }
 
 func getConfigFilePath() string {
@@ -59,16 +59,19 @@ func getConfigFilePath() string {
 	if err != nil {
 		panic(fmt.Errorf("获取当前用户的工作目录异常, err: %s", err))
 	}
-	return filepath.Join(homedir, CONFIG_YAML)
+	return filepath.Join(homedir, HomeDir, ConfigYaml)
 }
 
 func RecoverConfigFile() {
 	f := getConfigFilePath()
 	exist, _ := checkFile(f)
 	if !exist {
-		y, err := yaml.Marshal(&config)
+		y, err := yaml.Marshal(config)
 		if err == nil {
-			os.WriteFile(f, y, 0644)
+			err = os.WriteFile(f, y, 0644)
+			if err != nil {
+				fmt.Println(err.Error())
+			}
 		}
 	}
 }
@@ -93,7 +96,7 @@ func initDefaultConfig() {
 		Title:  "",
 	})
 
-	config = Config{
+	config = &Config{
 		Issue: &Issue{
 			FirstEnable: false,
 			LeftMarker:  "",
@@ -105,5 +108,5 @@ func initDefaultConfig() {
 }
 
 func GetConfig() *Config {
-	return &config
+	return config
 }

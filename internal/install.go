@@ -28,7 +28,7 @@ func Install(path string) error {
 	}
 
 	// bin home dir
-	controlHome := filepath.Join(home, ".gitflow-control")
+	controlHome := filepath.Join(home, HomeDir)
 	// bin
 	controlBin := filepath.Join(path, BinName)
 	// hook global config
@@ -39,7 +39,6 @@ func Install(path string) error {
 	if err != nil {
 		return err
 	}
-	RecoverConfigFile()
 
 	for _, symlink := range gitCommandSymlinks(path) {
 		// 获取 sym link链接
@@ -67,6 +66,7 @@ func Install(path string) error {
 	if err != nil {
 		return fmt.Errorf("创建工作目录[%s]失败: %s", controlHome, err)
 	}
+	RecoverConfigFile()
 
 	// 4 install bin
 	binPath, err := exec.LookPath(os.Args[0])
