@@ -2,13 +2,13 @@ package internal
 
 import "testing"
 
-func TestRg(t *testing.T){
+func TestRg(t *testing.T) {
 	configV1 := &Config{
 		Issue: &Issue{
 			FirstEnable: false,
 		},
 	}
-	messagev1:= `chore(pom): add pom dep version
+	messagev1 := `chore(pom): add pom dep version
 
 add pom dep version
 
@@ -21,10 +21,9 @@ Signed-off-by: clibing <wmsjhappy@gmail.com>`
 			FirstEnable: true,
 			LeftMarker:  "[",
 			RightMarker: "]",
-			Value:       make([]string, 10),
 		},
 	}
-	messagev2:= `[wback-11]chore(pom): add pom dep version
+	messagev2 := `[wback-11]chore(pom): add pom dep version
 
 add pom dep version
 

@@ -20,7 +20,7 @@ const (
 )
 
 const commitMessageCheckPatternV1 = `^(feat|fix|docs|style|refactor|test|chore|perf|hotfix)\((\S.*)\):\s(\S.*)|^Merge.*`
-const commitMessageCheckPatternV2 = `^\%s[a-zA-Z]+\-[0-9]+\%s(feat|fix|docs|style|refactor|test|chore|perf|hotfix)\((\S.*)\):\s(\S.*)|^Merge.*`
+const commitMessageCheckPatternV2 = `^\%s[a-zA-Z]+\-[0-9]+\%s[\n\r]+(feat|fix|docs|style|refactor|test|chore|perf|hotfix)\((\S.*)\):\s(\S.*)|^Merge.*`
 
 const commitMessageCheckFailedMsgV1 = `
 ╭────────────────────────────────────────────────────────────────────────────────────────╮
@@ -35,10 +35,12 @@ const commitMessageCheckFailedMsgV2 = `
 │ ✗ The commit message is not standardized.                                                                       │
 │ ✗ It must match the regular expression:                                                                         │
 │                                                                                                                 │
-│ ^\%s[a-zA-Z]+\-[0-9]+\%s(feat|fix|docs|style|refactor|test|chore|perf|hotfix)\((\S.*)\):\s(\S.*)|^Merge.*         │
+│ ^\%s[a-zA-Z]+\-[0-9]+\%s[\n\r]+(feat|fix|docs|style|refactor|test|chore|perf|hotfix)\((\S.*)\):\s(\S.*)|^Merge.*   │
 │                                                                                                                 │
 │ example:                                                                                                        │
-│ [BACKEND-001]chore(pom): add pom dep version                                                                    │
+│ [BACKEND-001]                                                                                                   │
+│                                                                                                                 │
+│ chore(pom): add pom dep version                                                                                 │
 │                                                                                                                 │
 │ add pom dep version                                                                                             │
 │                                                                                                                 │
@@ -204,7 +206,7 @@ func Commit(msg CommitMessage, config *Config) error {
 	*/
 
 	if config.Issue.FirstEnable {
-		_, err = fmt.Fprintf(f, "%s%s%s%s(%s): %s\n\n%s\n\n%s\n\n%s\n", config.Issue.LeftMarker, msg.Footer, config.Issue.RightMarker, msg.Type, msg.Scope, msg.Subject, msg.Body, msg.Footer, msg.SOB)
+		_, err = fmt.Fprintf(f, "%s%s%s\n\n%s(%s): %s\n\n%s\n\n%s\n\n%s\n", config.Issue.LeftMarker, msg.Footer, config.Issue.RightMarker, msg.Type, msg.Scope, msg.Subject, msg.Body, msg.Footer, msg.SOB)
 	} else {
 		_, err = fmt.Fprintf(f, "%s(%s): %s\n\n%s\n\n%s\n\n%s\n", msg.Type, msg.Scope, msg.Subject, msg.Body, msg.Footer, msg.SOB)
 	}

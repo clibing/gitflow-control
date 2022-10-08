@@ -9,6 +9,8 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+const CONFIG_YAML = ".control.yaml"
+
 var config Config
 
 type Config struct {
@@ -28,17 +30,12 @@ type Value struct {
 }
 
 func init() {
-	homedir, err := homedir.Dir()
-	if err != nil {
-		panic(fmt.Errorf("获取当前用户的工作目录异常, err: %s", err))
-	}
-	f := filepath.Join(homedir, "."+BinName, "control.yaml")
-
+	f := getConfigFilePath()
 	exist, err := checkFile(f)
 	if !exist || err != nil {
 		initDefaultConfig()
 		if !exist {
-			y, err := yaml.Marshal(config)
+			y, err := yaml.Marshal(&config)
 			if err == nil {
 				os.WriteFile(f, y, 0644)
 			}
@@ -54,6 +51,25 @@ func init() {
 	err = yaml.Unmarshal(data, &config)
 	if err != nil {
 		panic(fmt.Errorf("加载配置文件异常, err: %s", err))
+	}
+}
+
+func getConfigFilePath() string {
+	homedir, err := homedir.Dir()
+	if err != nil {
+		panic(fmt.Errorf("获取当前用户的工作目录异常, err: %s", err))
+	}
+	return filepath.Join(homedir, CONFIG_YAML)
+}
+
+func RecoverConfigFile() {
+	f := getConfigFilePath()
+	exist, _ := checkFile(f)
+	if !exist {
+		y, err := yaml.Marshal(&config)
+		if err == nil {
+			os.WriteFile(f, y, 0644)
+		}
 	}
 }
 

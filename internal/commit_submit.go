@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/charmbracelet/bubbles/spinner"
@@ -88,6 +89,10 @@ func (m SubmitModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m SubmitModel) View() string {
+	issue := ""
+	if GetConfig().Issue.FirstEnable {
+		issue = committingTypeStyle.Render(fmt.Sprintf("%s%s%s\n", GetConfig().Issue.LeftMarker, m.Msg.Footer, GetConfig().Issue.RightMarker))
+	}
 	header := committingTypeStyle.Render(m.Msg.Type) + committingScopeStyle.Render("("+m.Msg.Scope+")") + committingSubjectStyle.Render(": "+m.Msg.Subject) + "\n"
 	body := committingBodyStyle.Render(m.Msg.Body)
 	footer := committingFooterStyle.Render(m.Msg.Footer+"\n"+m.Msg.SOB) + "\n"
@@ -101,7 +106,7 @@ func (m SubmitModel) View() string {
 		}
 	}
 
-	return committingStyle.Render(lipgloss.JoinVertical(lipgloss.Left, header, body, footer, msg))
+	return committingStyle.Render(lipgloss.JoinVertical(lipgloss.Left, issue, header, body, footer, msg))
 }
 
 func NewSubmitModel() SubmitModel {

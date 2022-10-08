@@ -39,6 +39,8 @@ func Install(path string) error {
 	if err != nil {
 		return err
 	}
+	RecoverConfigFile()
+
 	for _, symlink := range gitCommandSymlinks(path) {
 		// 获取 sym link链接
 		if _, err := os.Lstat(symlink); err == nil {
