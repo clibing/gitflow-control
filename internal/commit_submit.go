@@ -107,7 +107,7 @@ func (m SubmitModel) View() string {
 		if m.Err != nil {
 			msg = committingFailedStyle.Render("( ●●● ) Commit Failed: \n" + m.Err.Error())
 		} else {
-			msg = committingSuccessStyle.Render("◉◉◉◉ Always code as if the guy who ends up maintaining your \n◉◉◉◉ code will be a violent psychopath who knows where you live...")
+			msg = committingSuccessStyle.Render("◉◉◉◉ Sharp tools make good work.")
 		}
 	}
 	return committingStyle.Render(lipgloss.JoinVertical(lipgloss.Left, issue, header, body, footer, msg))
@@ -140,5 +140,4 @@ func NewSubmitModel() SubmitModel {
 	}
 	s.Style = lipgloss.NewStyle().Foreground(lipgloss.AdaptiveColor{Light: "#25A065", Dark: "#19F896"}).Bold(true)
 	return SubmitModel{Spinner: s}
-	//return SubmitModel{}
 }
