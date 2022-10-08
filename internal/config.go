@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/mitchellh/go-homedir"
 	"gopkg.in/yaml.v2"
@@ -12,14 +13,15 @@ import (
 var config *Config
 
 type Config struct {
+	Mode  string `yaml:"mode"`  // issue号 放在消息的首位, 模式， 默认为auto:根据PrefixUrl自动调整, first: 放在首位, standard: 按照规范设置
 	Issue *Issue `yaml:"issue"` // 用于快速输入jira号
 }
 
 type Issue struct {
-	FirstEnable bool    `yaml:"first-enable"` // issue号 放在消息的首位
-	LeftMarker  string  `yaml:"left-marker"`  // issue号 左边默认标记
-	RightMarker string  `yaml:"right-marker"` // issue号 右边默认标记
-	Value       []Value `yaml:"value"`        // issue号 或者 jira号
+	PrefixUrl   []string `yaml:"prefix-url"`   // 如果配置默认为自动匹配模式
+	LeftMarker  string   `yaml:"left-marker"`  // issue号 左边默认标记
+	RightMarker string   `yaml:"right-marker"` // issue号 右边默认标记
+	Value       []Value  `yaml:"value"`        // issue号 或者 jira号
 }
 
 type Value struct {
@@ -97,8 +99,8 @@ func initDefaultConfig() {
 	})
 
 	config = &Config{
+		Mode: "auto",
 		Issue: &Issue{
-			FirstEnable: false,
 			LeftMarker:  "",
 			RightMarker: "",
 			Value:       v,
@@ -109,4 +111,27 @@ func initDefaultConfig() {
 
 func GetConfig() *Config {
 	return config
+}
+
+func RequiredFooter() bool {
+	var result bool
+	switch config.Mode {
+	case "auto":
+		url, err := GetOriginUrl()
+		panic(err)
+		for _, v := range config.Issue.PrefixUrl {
+			if strings.HasPrefix(v, url) {
+				result = true
+			}
+		}
+		result = false
+		break
+	case "first":
+		result = true
+		break
+	case "standard":
+		result = false
+		break
+	}
+	return result
 }

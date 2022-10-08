@@ -46,7 +46,8 @@ const commitMessageCheckFailedMsgV2 = `
 │                                                                                                                 │
 │ Signed-off-by: clibing <wmsjhappy@gmail.com>                                                                    │
 │                                                                                                                 │
-╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯`
+╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+注意：issue的格式为[英文字母+引文短接线+数字]`
 
 var CommitMessageType = map[string]string{
 	Feat:     "新功能（feature）",
@@ -158,6 +159,19 @@ func HasStagedFiles() error {
 	return nil
 }
 
+func GetOriginUrl() (string, error) {
+	err := CheckRepo()
+	if err != nil {
+		return "", err
+	}
+
+	msg, err := ExecGit("remote", "get-url", "--push", "origin")
+	if err != nil {
+		return "", err
+	}
+	return msg, nil
+}
+
 type CommitMessage struct {
 	Type    string // 已经初始化
 	Scope   string // 本地提交影响的范围，例如:数据层、控制层、视图层等等，视项目不同而不同。
@@ -205,7 +219,7 @@ func Commit(msg CommitMessage, config *Config) error {
 		 *
 	*/
 
-	if config.Issue.FirstEnable {
+	if RequiredFooter() {
 		_, err = fmt.Fprintf(f, "%s%s%s\n\n%s(%s): %s\n\n%s\n\n%s\n\n%s\n", config.Issue.LeftMarker, msg.Footer, config.Issue.RightMarker, msg.Type, msg.Scope, msg.Subject, msg.Body, msg.Footer, msg.SOB)
 	} else {
 		_, err = fmt.Fprintf(f, "%s(%s): %s\n\n%s\n\n%s\n\n%s\n", msg.Type, msg.Scope, msg.Subject, msg.Body, msg.Footer, msg.SOB)
@@ -220,7 +234,7 @@ func Commit(msg CommitMessage, config *Config) error {
 
 func CheckCommitMessage(message string, config *Config) error {
 	rg := commitMessageCheckPatternV1
-	if config.Issue.FirstEnable {
+	if RequiredFooter() {
 		rg = fmt.Sprintf(commitMessageCheckPatternV2, config.Issue.LeftMarker, config.Issue.RightMarker)
 	}
 	// 增加 commit-msg hook时使用
@@ -231,8 +245,7 @@ func CheckCommitMessage(message string, config *Config) error {
 	}
 
 	msgs := reg.FindStringSubmatch(string(bs))
-	if config.Issue.FirstEnable {
-		fmt.Println("---", msgs, len(msgs))
+	if RequiredFooter() {
 		if len(msgs) != 4 {
 			return fmt.Errorf(commitMessageCheckFailedMsgV2, config.Issue.LeftMarker, config.Issue.RightMarker)
 		}

@@ -95,7 +95,7 @@ func (m SubmitModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m SubmitModel) View() string {
 	issue := ""
-	if GetConfig().Issue.FirstEnable {
+	if RequiredFooter() {
 		issue = committingIsuueStyle.Render(fmt.Sprintf("%s%s%s\n", GetConfig().Issue.LeftMarker, m.Msg.Footer, GetConfig().Issue.RightMarker))
 	}
 	header := committingTypeStyle.Render(m.Msg.Type) + committingScopeStyle.Render("("+m.Msg.Scope+")") + committingSubjectStyle.Render(": "+m.Msg.Subject) + "\n"

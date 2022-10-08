@@ -249,7 +249,7 @@ func NewInputsModel() InputsModel {
 			iwc.Input.PromptStyle = inputsPromptNormalStyle
 			iwc.Input.Placeholder = "Description of the change, justification and migration notes."
 			iwc.Checker = func(s string) error {
-				if !GetConfig().Issue.FirstEnable {
+				if !RequiredFooter() {
 					return nil
 				}
 				if strings.TrimSpace(s) == "" {
