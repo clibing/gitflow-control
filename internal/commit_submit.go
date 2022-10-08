@@ -15,8 +15,8 @@ var (
 
 	committingIsuueStyle = lipgloss.NewStyle().
 				Bold(true).
-				Foreground(lipgloss.AdaptiveColor{Light: "#FFFDF0", Dark: "#FFFDF0"}).
-				Background(lipgloss.AdaptiveColor{Light: "#5B43FF", Dark: "#7652FF"})
+				Foreground(lipgloss.AdaptiveColor{Light: "#FFFD00", Dark: "#FFFD00"}).
+				Background(lipgloss.AdaptiveColor{Light: "#5B03FF", Dark: "#7052FF"})
 
 	committingTypeStyle = lipgloss.NewStyle().
 				Bold(true).
@@ -96,7 +96,7 @@ func (m SubmitModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m SubmitModel) View() string {
 	issue := ""
 	if RequiredFooter() {
-		issue = committingIsuueStyle.Render(fmt.Sprintf("%s%s%s\n", GetConfig().Issue.LeftMarker, m.Msg.Footer, GetConfig().Issue.RightMarker))
+		issue = committingIsuueStyle.Render(fmt.Sprintf("%s%s%s", GetConfig().Issue.LeftMarker, m.Msg.Footer, GetConfig().Issue.RightMarker)) + "\n"
 	}
 	header := committingTypeStyle.Render(m.Msg.Type) + committingScopeStyle.Render("("+m.Msg.Scope+")") + committingSubjectStyle.Render(": "+m.Msg.Subject) + "\n"
 	body := committingBodyStyle.Render(m.Msg.Body)
