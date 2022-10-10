@@ -48,7 +48,6 @@ func main2() {
 }
 
 func main() {
-
 	control := &cmd.Control{
 		Version:     version,
 		BuildDate:   buildDate,
@@ -67,7 +66,7 @@ func main() {
 	// 获取当前命令的名字
 	binName := filepath.Base(bin)
 	// 检查是否存在扩展的命令
-	result := control.GetBranchCliApp(binName)
+	result := control.GetSubCliApp(binName)
 	if result != nil {
 		app = result
 	}

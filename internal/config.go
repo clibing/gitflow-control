@@ -127,3 +127,15 @@ func RequiredFooter() bool {
 func GetLatestIssue() string {
 	return config.Issue.Value
 }
+
+func RecordIsuueHistory(issue string) {
+	config.Issue.Value = issue
+	f := getConfigFilePath()
+	y, err := yaml.Marshal(config)
+	if err == nil {
+		err = os.WriteFile(f, y, 0644)
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+	}
+}

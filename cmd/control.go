@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"runtime"
+	"strings"
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -17,7 +19,7 @@ type Control struct {
 	Config      *internal.Config // 配置信息
 }
 
-var subApps = make([]*cli.App, 10)
+var subApps = make([]*cli.App, 11)
 
 func (m *Control) Init() {
 	subApps[0] = m.newBranchCliApp(internal.Feat)
@@ -30,6 +32,7 @@ func (m *Control) Init() {
 	subApps[7] = m.newBranchCliApp("hotfix")
 	subApps[8] = m.CommitApp()
 	subApps[9] = m.CheckMessageApp()
+	subApps[10] = m.IssueApp()
 	m.Config = internal.GetConfig()
 }
 
@@ -115,9 +118,13 @@ func (m *Control) newBranchCliApp(ct string) *cli.App {
 	}
 }
 
-func (m *Control) GetBranchCliApp(binName string) *cli.App {
+func (m *Control) GetSubCliApp(binName string) *cli.App {
+	n := binName
+	if runtime.GOOS == "windows" {
+		n = strings.ReplaceAll(binName, ".exe", "")
+	}
 	for _, app := range subApps {
-		if app != nil && binName == app.Name {
+		if app != nil && n == app.Name {
 			return app
 		}
 	}
@@ -171,12 +178,11 @@ func (m *Control) CheckMessageApp() *cli.App {
 	}
 }
 
-// TODO issue的管理
 func (m *Control) IssueApp() *cli.App {
 	return &cli.App{
 		Name:                 "git-issue",
-		Usage:                "git issue",
-		UsageText:            "git issue command #ISSUE",
+		Usage:                "Git Issue",
+		UsageText:            "git issue --bug issue-number",
 		Version:              fmt.Sprintf("%s %s %s", m.Version, m.BuildDate, m.BuildCommit),
 		Authors:              []*cli.Author{{Name: "clibing", Email: "wmsjhappy@gmail.com"}},
 		Copyright:            "Copyright (c) " + time.Now().Format("2006") + " clibing, All rights reserved.",
@@ -185,14 +191,16 @@ func (m *Control) IssueApp() *cli.App {
 			if c.NArg() != 0 {
 				return cli.ShowAppHelp(c)
 			}
-			return internal.CheckCommitMessage(c.Args().First(), m.Config)
+			issue := c.String("bug")
+			internal.RecordIsuueHistory(issue)
+			return nil
 		},
 		Flags: []cli.Flag{
 			&cli.StringFlag{
-				Name:    "command",
-				Aliases: []string{"c"},
-				Usage:   "-c append|remove|clean",
-				Value:   "append",
+				Name:    "bug",
+				Aliases: []string{"b"},
+				Usage:   "input issue number",
+				Value:   "",
 			},
 		},
 	}
