@@ -11,7 +11,7 @@ import (
 
 var (
 	committingStyle = lipgloss.NewStyle().
-			Padding(1, 1, 1, 2)
+			Padding(0, 1, 1, )
 
 	committingIsuueStyle = lipgloss.NewStyle().
 				Bold(true).
