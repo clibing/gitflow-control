@@ -47,6 +47,21 @@ func main2() {
 	}
 }
 
+func main3() {
+	control := &cmd.Control{
+		Version:     version,
+		BuildDate:   buildDate,
+		BuildCommit: buildCommit,
+	}
+	control.Init()
+
+	err := control.NewBranchCliApp("hotfix").Run(os.Args)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+}
+
 func main() {
 	control := &cmd.Control{
 		Version:     version,

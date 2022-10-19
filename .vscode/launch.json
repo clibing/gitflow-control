@@ -11,10 +11,14 @@
             "mode": "auto",
             // "program": "${fileDirname}",
             "program": "${workspaceRoot}/main.go",
+            // "args": [
+            //     "install",
+            //     "-p",
+            //     "/Users/clibing/temp"
+            // ]
+
             "args": [
-                "install",
-                "-p",
-                "/Users/clibing/temp"
+                "web-socket-async-connect"
             ]
         }
     ]

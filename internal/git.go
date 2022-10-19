@@ -82,7 +82,7 @@ func Switch(name string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return ExecGit("switch", "c", name)
+	return ExecGit("switch", "-c", name)
 }
 
 func Branch(all, remote bool) (string, error) {

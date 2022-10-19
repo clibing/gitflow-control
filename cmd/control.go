@@ -22,14 +22,14 @@ type Control struct {
 var subApps = make([]*cli.App, 11)
 
 func (m *Control) Init() {
-	subApps[0] = m.newBranchCliApp(internal.Feat)
-	subApps[1] = m.newBranchCliApp(internal.Fix)
-	subApps[2] = m.newBranchCliApp(internal.Docs)
-	subApps[3] = m.newBranchCliApp(internal.Style)
-	subApps[4] = m.newBranchCliApp(internal.Refactor)
-	subApps[5] = m.newBranchCliApp(internal.Test)
-	subApps[6] = m.newBranchCliApp(internal.Chore)
-	subApps[7] = m.newBranchCliApp("hotfix")
+	subApps[0] = m.NewBranchCliApp(internal.Feat)
+	subApps[1] = m.NewBranchCliApp(internal.Fix)
+	subApps[2] = m.NewBranchCliApp(internal.Docs)
+	subApps[3] = m.NewBranchCliApp(internal.Style)
+	subApps[4] = m.NewBranchCliApp(internal.Refactor)
+	subApps[5] = m.NewBranchCliApp(internal.Test)
+	subApps[6] = m.NewBranchCliApp(internal.Chore)
+	subApps[7] = m.NewBranchCliApp("hotfix")
 	subApps[8] = m.CommitApp()
 	subApps[9] = m.CheckMessageApp()
 	subApps[10] = m.IssueApp()
@@ -98,7 +98,7 @@ func (m *Control) Uninstall() *cli.Command {
 	}
 }
 
-func (m *Control) newBranchCliApp(ct string) *cli.App {
+func (m *Control) NewBranchCliApp(ct string) *cli.App {
 	return &cli.App{
 		Name:                 "git-" + ct,
 		Usage:                fmt.Sprintf("Create %s branch", ct),
