@@ -192,14 +192,24 @@ func (m *Control) IssueApp() *cli.App {
 				return cli.ShowAppHelp(c)
 			}
 			issue := c.String("bug")
-			internal.RecordIsuueHistory(issue)
+			project := c.String("project")
+			if len(project) == 0 {
+				project, _ = internal.GetProjectName()
+			}
+			internal.RecordIsuueHistory(project, issue)
 			return nil
 		},
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:    "bug",
 				Aliases: []string{"b"},
-				Usage:   "input issue number",
+				Usage:   "issue number",
+				Value:   "",
+			},
+			&cli.StringFlag{
+				Name:    "project",
+				Aliases: []string{"p"},
+				Usage:   "project name",
 				Value:   "",
 			},
 		},

@@ -49,6 +49,8 @@ const commitMessageCheckFailedMsgV2 = `
 ╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 注意：issue的格式为[英文字母+引文短接线+数字]`
 
+const projectNamePattern = `(?m)\/([a-zA-Z_\-0-9]+)\.git`
+
 var CommitMessageType = map[string]string{
 	Feat:     "新功能（feature）",
 	Fix:      "修补bug",
@@ -256,4 +258,19 @@ func CheckCommitMessage(message string, config *Config) error {
 	}
 
 	return nil
+}
+
+func GetProjectName() (string, error) {
+	url, err := GetOriginUrl()
+	if err != nil {
+		return "", err
+	}
+	var reg = regexp.MustCompile(`(?m)\/([a-zA-Z_\-0-9]+)\.git`)
+
+	msgs := reg.FindStringSubmatch(url)
+
+	if len(msgs) != 2 {
+		return "", fmt.Errorf("current git push url: %s, not found name", url)
+	}
+	return msgs[1], nil
 }

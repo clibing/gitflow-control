@@ -18,10 +18,16 @@ type Config struct {
 }
 
 type Issue struct {
-	PrefixUrl   []string `yaml:"prefix-url"`   // 如果配置默认为自动匹配模式
-	LeftMarker  string   `yaml:"left-marker"`  // issue号 左边默认标记
-	RightMarker string   `yaml:"right-marker"` // issue号 右边默认标记
-	Value       string   `yaml:"value"`        // issue号 或者 jira号
+	PrefixUrl   []string      `yaml:"prefix-url"`   // 如果配置默认为自动匹配模式
+	LeftMarker  string        `yaml:"left-marker"`  // issue号 左边默认标记
+	RightMarker string        `yaml:"right-marker"` // issue号 右边默认标记
+	Value       string        `yaml:"value"`        // issue号 或者 jira号
+	List        []RecordIssue `yaml:"list"`         // 最近的issue号
+}
+
+type RecordIssue struct {
+	ProjectName string `yaml:"project-name"` // 对应的Git的项目名字
+	Number      string `yaml:"number"`       // 对应的issue号
 }
 
 func init() {
@@ -125,11 +131,37 @@ func RequiredFooter() bool {
 }
 
 func GetLatestIssue() string {
-	return config.Issue.Value
+
+	name, err := GetProjectName()
+	if err != nil {
+		return ""
+	}
+	for _, item := range config.Issue.List {
+		if item.ProjectName == name {
+			return item.Number
+		}
+	}
+	return ""
 }
 
-func RecordIsuueHistory(issue string) {
+func RecordIsuueHistory(project, issue string) {
 	config.Issue.Value = issue
+
+	var needAdd bool
+	for _, item := range config.Issue.List {
+		if item.ProjectName == project {
+			item.Number = issue
+			needAdd = false
+		}
+	}
+	if !needAdd {
+		v := RecordIssue{
+			ProjectName: project,
+			Number:      issue,
+		}
+		config.Issue.List = append(config.Issue.List, v)
+	}
+
 	f := getConfigFilePath()
 	y, err := yaml.Marshal(config)
 	if err == nil {

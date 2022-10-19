@@ -59,3 +59,11 @@ func ccm(message string, config *Config) error {
 
 	return nil
 }
+
+func TestProjectName(t *testing.T) {
+	v, e := GetProjectName()
+	if e != nil {
+		fmt.Println(e)
+	}
+	fmt.Println(v)
+}
