@@ -137,7 +137,7 @@ func GetLatestIssue() string {
 		return ""
 	}
 	for _, item := range config.Issue.List {
-		if item.ProjectName == name {
+		if item.ProjectName == name && item.Number != "" {
 			return item.Number
 		}
 	}
@@ -152,6 +152,7 @@ func RecordIsuueHistory(project, issue string) {
 		if item.ProjectName == project {
 			item.Number = issue
 			needAdd = false
+			break
 		}
 	}
 	if !needAdd {
