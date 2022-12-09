@@ -18,11 +18,11 @@ type Config struct {
 }
 
 type Issue struct {
-	PrefixUrl   []string      `yaml:"prefix-url"`   // 如果配置默认为自动匹配模式
-	LeftMarker  string        `yaml:"left-marker"`  // issue号 左边默认标记
-	RightMarker string        `yaml:"right-marker"` // issue号 右边默认标记
-	Value       string        `yaml:"value"`        // issue号 或者 jira号
-	List        []RecordIssue `yaml:"list"`         // 最近的issue号
+	PrefixUrl   []string       `yaml:"prefix-url"`   // 如果配置默认为自动匹配模式
+	LeftMarker  string         `yaml:"left-marker"`  // issue号 左边默认标记
+	RightMarker string         `yaml:"right-marker"` // issue号 右边默认标记
+	Value       string         `yaml:"value"`        // issue号 或者 jira号
+	List        []*RecordIssue `yaml:"list"`         // 最近的issue号
 }
 
 type RecordIssue struct {
@@ -147,16 +147,16 @@ func GetLatestIssue() string {
 func RecordIsuueHistory(project, issue string) {
 	config.Issue.Value = issue
 
-	var needAdd bool
+	var skipAppend bool
 	for _, item := range config.Issue.List {
 		if item.ProjectName == project {
 			item.Number = issue
-			needAdd = false
+			skipAppend = true
 			break
 		}
 	}
-	if !needAdd {
-		v := RecordIssue{
+	if !skipAppend {
+		v := &RecordIssue{
 			ProjectName: project,
 			Number:      issue,
 		}
