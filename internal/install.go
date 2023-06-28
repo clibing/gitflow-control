@@ -171,5 +171,6 @@ func gitCommandSymlinks(path string) []string {
 		filepath.Join(path, "git-chore"),    // 创建chore分支
 		filepath.Join(path, "git-hotfix"),   // 创建hotfix分支
 		filepath.Join(path, "git-issue"),    // 记录最近一次的issue号
+		filepath.Join(path, "git-record"),   // 记录当前分支描述信息， 主要用于描述当前分支业务类型
 	}
 }

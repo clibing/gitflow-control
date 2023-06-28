@@ -13,8 +13,15 @@ import (
 var config *Config
 
 type Config struct {
-	Mode  string `yaml:"mode"`  // issue号 放在消息的首位, 模式， 默认为auto:根据PrefixUrl自动调整, first: 放在首位, standard: 按照规范设置
-	Issue *Issue `yaml:"issue"` // 用于快速输入jira号
+	Mode   string    `yaml:"mode"`   // issue号 放在消息的首位, 模式， 默认为auto:根据PrefixUrl自动调整, first: 放在首位, standard: 按照规范设置
+	Issue  *Issue    `yaml:"issue"`  // 用于快速输入jira号
+	Record []*Record `yaml:"record"` // 记录器
+}
+
+// 记录器
+type Record struct {
+	Project  string            `yaml:"project"`  // 对应的Git的项目名字
+	Describe map[string]string `yaml:"describe"` // 分支的描述信息
 }
 
 type Issue struct {
@@ -171,4 +178,54 @@ func RecordIsuueHistory(project, issue string) {
 			fmt.Println(err.Error())
 		}
 	}
+}
+
+func BranchRecord(project, branch, title string) (value string) {
+	var exist bool
+	for _, item := range config.Record {
+		if item.Project == project {
+			if v, ok := item.Describe[branch]; ok{
+				value = v
+			}
+			// 相同 直接返回
+			if item.Describe[branch] == title {
+				return
+			}
+			exist= true
+			item.Describe[branch] = title
+			break
+		}
+	}
+
+	if !exist {
+		config.Record = append(config.Record, &Record{
+			Project: project,
+			Describe: map[string]string{
+				branch: title,
+			},
+		})
+	}
+
+	f := getConfigFilePath()
+	y, err := yaml.Marshal(config)
+	if err == nil {
+		err = os.WriteFile(f, y, 0644)
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+	}
+	return
+}
+
+func GetBranchRecord(project, branch string) (value string) {
+	for _, item := range config.Record {
+		if item.Project == project {
+			if v, ok := item.Describe[branch]; ok {
+				value = v
+				return
+			}
+		}
+	}
+	value = ""
+	return
 }

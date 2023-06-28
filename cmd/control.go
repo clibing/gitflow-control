@@ -19,7 +19,7 @@ type Control struct {
 	Config      *internal.Config // 配置信息
 }
 
-var subApps = make([]*cli.App, 11)
+var subApps = make([]*cli.App, 12)
 
 func (m *Control) Init() {
 	subApps[0] = m.NewBranchCliApp(internal.Feat)
@@ -33,13 +33,26 @@ func (m *Control) Init() {
 	subApps[8] = m.CommitApp()
 	subApps[9] = m.CheckMessageApp()
 	subApps[10] = m.IssueApp()
+	subApps[11] = m.BranchRecord()
 	m.Config = internal.GetConfig()
 }
 
 func (m *Control) DefaultCliApp() *cli.App {
 	return &cli.App{
-		Name:                 "gitflow-control",
-		Usage:                "Git Flow Control",
+		Name: "gitflow-control",
+		UsageText: `Git Flow Control
+
+git ci: 自定义提交
+git feat: 创建feat分支
+git fix: 创建fit分支
+git docs: 创建docs类分支
+git style: 创建sytle的分支
+git refactor: 创建refactory的分支
+git test: 创建test分支
+git chore: 创建chore分支
+git hotfix: 创建hotfix分支
+git issue: 记录最近一次的issue号
+git record: 记录当前分支描述信息， 主要用于描述当前分支业务类型`,
 		Version:              fmt.Sprintf("%s %s %s", m.Version, m.BuildDate, m.BuildCommit),
 		Authors:              []*cli.Author{{Name: "clibing", Email: "wmsjhappy@gmail.com"}},
 		Copyright:            "Copyright (c) " + time.Now().Format("2006") + " clibing, All rights reserved.",
@@ -210,6 +223,42 @@ func (m *Control) IssueApp() *cli.App {
 				Name:    "project",
 				Aliases: []string{"p"},
 				Usage:   "project name",
+				Value:   "",
+			},
+		},
+	}
+}
+
+// 分支  记录器
+func (m *Control) BranchRecord() *cli.App {
+	return &cli.App{
+		Name:                 "git-record",
+		Usage:                "Git Record",
+		UsageText:            "git record --title \"当前分支描述信息\"",
+		Version:              fmt.Sprintf("%s %s %s", m.Version, m.BuildDate, m.BuildCommit),
+		Authors:              []*cli.Author{{Name: "clibing", Email: "wmsjhappy@gmail.com"}},
+		Copyright:            "Copyright (c) " + time.Now().Format("2006") + " clibing, All rights reserved.",
+		EnableBashCompletion: true,
+		Action: func(c *cli.Context) error {
+			project, _ := internal.GetProjectName()
+			branch, _ := internal.CurrentBranch()
+			title := c.String("title")
+			if len(title) == 0 {
+				title = internal.GetBranchRecord(project, branch)
+				if len(title) > 0 {
+					fmt.Printf("%s\n", title)
+				}
+				return nil
+			}
+
+			internal.BranchRecord(project, branch, title)
+			return nil
+		},
+		Flags: []cli.Flag{
+			&cli.StringFlag{
+				Name:    "title",
+				Aliases: []string{"t"},
+				Usage:   "title description",
 				Value:   "",
 			},
 		},
