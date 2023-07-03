@@ -231,10 +231,11 @@ func GetBranchRecord(project, branch string) (value string) {
 }
 
 func ShowBranchRecord(project, title string) (err error) {
+	fmt.Printf("%s\n\n", project)
 	for _, item := range config.Record {
 		if item.Project == project {
 			for k, v := range item.Describe {
-				fmt.Println(k, v)
+				fmt.Printf("%10.24s: \"%s\"\n", k, v)
 			}
 			return nil
 		}
