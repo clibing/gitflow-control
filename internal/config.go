@@ -184,14 +184,14 @@ func BranchRecord(project, branch, title string) (value string) {
 	var exist bool
 	for _, item := range config.Record {
 		if item.Project == project {
-			if v, ok := item.Describe[branch]; ok{
+			if v, ok := item.Describe[branch]; ok {
 				value = v
 			}
 			// 相同 直接返回
 			if item.Describe[branch] == title {
 				return
 			}
-			exist= true
+			exist = true
 			item.Describe[branch] = title
 			break
 		}
@@ -228,4 +228,16 @@ func GetBranchRecord(project, branch string) (value string) {
 	}
 	value = ""
 	return
+}
+
+func ShowBranchRecord(project, title string) (err error) {
+	for _, item := range config.Record {
+		if item.Project == project {
+			for k, v := range item.Describe {
+				fmt.Println(k, v)
+			}
+			return nil
+		}
+	}
+	return nil
 }

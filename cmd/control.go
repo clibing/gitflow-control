@@ -243,6 +243,11 @@ func (m *Control) BranchRecord() *cli.App {
 			project, _ := internal.GetProjectName()
 			branch, _ := internal.CurrentBranch()
 			title := c.String("title")
+			if c.Bool("all") {
+				internal.ShowBranchRecord(project, title)
+				return nil
+			}
+
 			if len(title) == 0 {
 				title = internal.GetBranchRecord(project, branch)
 				if len(title) > 0 {
@@ -260,6 +265,12 @@ func (m *Control) BranchRecord() *cli.App {
 				Aliases: []string{"t"},
 				Usage:   "title description",
 				Value:   "",
+			},
+			&cli.BoolFlag{
+				Name:    "all",
+				Aliases: []string{"a"},
+				Usage:   "show all description",
+				Value:   false,
 			},
 		},
 	}
