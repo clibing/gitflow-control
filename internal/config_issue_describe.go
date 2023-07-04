@@ -1,6 +1,9 @@
 package internal
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 func GetLatestIssue() string {
 
@@ -23,7 +26,7 @@ func IssueUpgrade() error {
 	return nil
 }
 
-func IssueDescribe(project, branch string) {
+func IssueDescribe(project, branch string, time bool) {
 	if len(project) == 0 || len(branch) == 0 {
 		return
 	}
@@ -39,7 +42,11 @@ func IssueDescribe(project, branch string) {
 	if !ok {
 		return
 	}
-	fmt.Printf("[%s]: %s\n", b.Number, b.Describe)
+	if time {
+		fmt.Printf("[%s]: \"%s\".(%s)\n", b.Number, b.Describe, b.Time)
+	} else {
+		fmt.Printf("[%s]: \"%s\"\n", b.Number, b.Describe)
+	}
 }
 
 func IssueRecord(project, branch, issue, describe string) {
@@ -73,9 +80,11 @@ func IssueRecord(project, branch, issue, describe string) {
 	}
 	b.Number = issue
 	b.Describe = describe
+	b.Time = time.Now().Format("2006-01-02 15:04:05")
 	Rewrite()
 }
 
+// 废弃
 func RecordIsuueHistory(project, issue string) {
 	var skipAppend bool
 	for _, item := range config.Issue.List {

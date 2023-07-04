@@ -42,6 +42,7 @@ type RecordIssue struct {
 type BugDescribe struct {
 	Number   string `yaml:"number"`   // jira number
 	Describe string `yaml:"describe"` // jira description
+	Time     string `yaml:"time"`     // create time
 }
 
 func init() {
