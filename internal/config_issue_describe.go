@@ -26,6 +26,26 @@ func IssueUpgrade() error {
 	return nil
 }
 
+func GetIssueDescribe(project, branch string) (issue string) {
+	if len(project) == 0 || len(branch) == 0 {
+		return
+	}
+
+	// project
+	p, ok := config.Issue.Describes[project]
+	if !ok {
+		return
+	}
+
+	// 获取项目的分支描述map
+	b, ok := p[branch]
+	if !ok {
+		return
+	}
+	issue = b.Number
+	return
+}
+
 func IssueDescribe(project, branch string, time bool) {
 	if len(project) == 0 || len(branch) == 0 {
 		return
@@ -75,7 +95,7 @@ func IssueRecord(project, branch, issue, describe string) {
 		p[branch] = &BugDescribe{
 			Number:   issue,
 			Describe: describe,
-			Time: v,
+			Time:     v,
 		}
 		Rewrite()
 		return

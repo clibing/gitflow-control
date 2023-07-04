@@ -258,7 +258,15 @@ func NewInputsModel() InputsModel {
 				return nil
 			}
 			if RequiredFooter() {
-				iwc.Input.SetValue(GetLatestIssue())
+				var issue string
+				project, _ := GetProjectName()
+				branch, _ := CurrentBranch()
+				if len(project) == 0 && len(branch) == 0 {
+					issue = GetLatestIssue()
+				} else {
+					issue = GetIssueDescribe(project, branch)
+				}
+				iwc.Input.SetValue(issue)
 			}
 		}
 
