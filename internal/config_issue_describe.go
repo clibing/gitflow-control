@@ -75,6 +75,8 @@ func IssueRecord(project, branch, issue, describe string) {
 		return
 	}
 
+	// current time
+	v := time.Now().Format("2006-01-02 15:04:05")
 	// project
 	p, ok := config.Issue.Describes[project]
 	if !ok {
@@ -82,6 +84,7 @@ func IssueRecord(project, branch, issue, describe string) {
 		b[branch] = &BugDescribe{
 			Number:   issue,
 			Describe: describe,
+			Time:     v,
 		}
 		config.Issue.Describes[project] = b
 		Rewrite()
@@ -90,7 +93,6 @@ func IssueRecord(project, branch, issue, describe string) {
 
 	// 获取项目的分支描述map
 	b, ok := p[branch]
-	v := time.Now().Format("2006-01-02 15:04:05")
 	if !ok {
 		p[branch] = &BugDescribe{
 			Number:   issue,
