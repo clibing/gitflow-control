@@ -195,7 +195,7 @@ func (m *Control) IssueApp() *cli.App {
 	return &cli.App{
 		Name:                 "git-issue",
 		Usage:                "Git Issue",
-		UsageText:            "git issue --bug issue-number",
+		UsageText:            "git issue --issue \"issue-number\" --descrivbe \"描述信息\"",
 		Version:              fmt.Sprintf("%s %s %s", m.Version, m.BuildDate, m.BuildCommit),
 		Authors:              []*cli.Author{{Name: "clibing", Email: "wmsjhappy@gmail.com"}},
 		Copyright:            "Copyright (c) " + time.Now().Format("2006") + " clibing, All rights reserved.",
@@ -204,26 +204,65 @@ func (m *Control) IssueApp() *cli.App {
 			if c.NArg() != 0 {
 				return cli.ShowAppHelp(c)
 			}
-			issue := c.String("bug")
+
+			issue := c.String("issue")
 			project := c.String("project")
+			old := c.Bool("old")
+			if old {
+				if len(issue) == 0 {
+					fmt.Println(internal.GetLatestIssue())
+					return nil
+				}
+				internal.RecordIsuueHistory(project, issue)
+				return nil
+			}
+
 			if len(project) == 0 {
 				project, _ = internal.GetProjectName()
 			}
-			internal.RecordIsuueHistory(project, issue)
+
+			branch := c.String("branch")
+			if len(branch) == 0 {
+				branch, _ = internal.CurrentBranch()
+			}
+			if len(project) == 0 || len(branch) == 0 {
+				fmt.Println("项目名字或者分支为空")
+				return nil
+			}
+
+			if len(issue) == 0 {
+				internal.IssueDescribe(project, branch)
+				return nil
+			}
+			describe := c.String("describe")
+			internal.IssueRecord(project, branch, issue, describe)
 			return nil
 		},
 		Flags: []cli.Flag{
 			&cli.StringFlag{
-				Name:    "bug",
-				Aliases: []string{"b"},
+				Name:    "issue",
+				Aliases: []string{"i"},
 				Usage:   "issue number",
-				Value:   "",
+			},
+			&cli.StringFlag{
+				Name:    "describe",
+				Aliases: []string{"d"},
+				Usage:   "describe value",
 			},
 			&cli.StringFlag{
 				Name:    "project",
 				Aliases: []string{"p"},
 				Usage:   "project name",
-				Value:   "",
+			},
+			&cli.StringFlag{
+				Name:    "branch",
+				Aliases: []string{"b"},
+				Usage:   "branch name",
+			},
+			&cli.BoolFlag{
+				Name:    "old",
+				Aliases: []string{"o"},
+				Usage:   "Previous version old",
 			},
 		},
 	}

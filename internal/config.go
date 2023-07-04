@@ -25,16 +25,23 @@ type Record struct {
 }
 
 type Issue struct {
-	PrefixUrl   []string       `yaml:"prefix-url"`   // 如果配置默认为自动匹配模式
-	LeftMarker  string         `yaml:"left-marker"`  // issue号 左边默认标记
-	RightMarker string         `yaml:"right-marker"` // issue号 右边默认标记
-	Value       string         `yaml:"value"`        // issue号 或者 jira号
-	List        []*RecordIssue `yaml:"list"`         // 最近的issue号
+	PrefixUrl   []string                           `yaml:"prefix-url"`      // 如果配置默认为自动匹配模式
+	LeftMarker  string                             `yaml:"left-marker"`     // issue号 左边默认标记
+	RightMarker string                             `yaml:"right-marker"`    // issue号 右边默认标记
+	Value       string                             `yaml:"value,omitempty"` // issue号 或者 jira号
+	List        []*RecordIssue                     `yaml:"list"`            // 最近的issue号
+	Describes   map[string]map[string]*BugDescribe `yaml:"listv2"`          // 最近的issue号
 }
 
 type RecordIssue struct {
 	ProjectName string `yaml:"project-name"` // 对应的Git的项目名字
 	Number      string `yaml:"number"`       // 对应的issue号
+}
+
+// bug 描述
+type BugDescribe struct {
+	Number   string `yaml:"number"`   // jira number
+	Describe string `yaml:"describe"` // jira description
 }
 
 func init() {
@@ -137,39 +144,7 @@ func RequiredFooter() bool {
 	return false
 }
 
-func GetLatestIssue() string {
-
-	name, err := GetProjectName()
-	if err != nil {
-		return ""
-	}
-	for _, item := range config.Issue.List {
-		if item.ProjectName == name && item.Number != "" {
-			return item.Number
-		}
-	}
-	return ""
-}
-
-func RecordIsuueHistory(project, issue string) {
-	config.Issue.Value = issue
-
-	var skipAppend bool
-	for _, item := range config.Issue.List {
-		if item.ProjectName == project {
-			item.Number = issue
-			skipAppend = true
-			break
-		}
-	}
-	if !skipAppend {
-		v := &RecordIssue{
-			ProjectName: project,
-			Number:      issue,
-		}
-		config.Issue.List = append(config.Issue.List, v)
-	}
-
+func Rewrite() {
 	f := getConfigFilePath()
 	y, err := yaml.Marshal(config)
 	if err == nil {
@@ -178,67 +153,4 @@ func RecordIsuueHistory(project, issue string) {
 			fmt.Println(err.Error())
 		}
 	}
-}
-
-func BranchRecord(project, branch, title string) (value string) {
-	var exist bool
-	for _, item := range config.Record {
-		if item.Project == project {
-			if v, ok := item.Describe[branch]; ok {
-				value = v
-			}
-			// 相同 直接返回
-			if item.Describe[branch] == title {
-				return
-			}
-			exist = true
-			item.Describe[branch] = title
-			break
-		}
-	}
-
-	if !exist {
-		config.Record = append(config.Record, &Record{
-			Project: project,
-			Describe: map[string]string{
-				branch: title,
-			},
-		})
-	}
-
-	f := getConfigFilePath()
-	y, err := yaml.Marshal(config)
-	if err == nil {
-		err = os.WriteFile(f, y, 0644)
-		if err != nil {
-			fmt.Println(err.Error())
-		}
-	}
-	return
-}
-
-func GetBranchRecord(project, branch string) (value string) {
-	for _, item := range config.Record {
-		if item.Project == project {
-			if v, ok := item.Describe[branch]; ok {
-				value = v
-				return
-			}
-		}
-	}
-	value = ""
-	return
-}
-
-func ShowBranchRecord(project, title string) (err error) {
-	fmt.Printf("%s\n\n", project)
-	for _, item := range config.Record {
-		if item.Project == project {
-			for k, v := range item.Describe {
-				fmt.Printf("%10.24s: \"%s\"\n", k, v)
-			}
-			return nil
-		}
-	}
-	return nil
 }
