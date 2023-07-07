@@ -46,7 +46,7 @@ func GetIssueDescribe(project, branch string) (issue string) {
 	return
 }
 
-func IssueDescribe(project, branch string, time bool) {
+func IssueDescribe(project, branch string, time, all bool) {
 	if len(project) == 0 || len(branch) == 0 {
 		return
 	}
@@ -54,6 +54,16 @@ func IssueDescribe(project, branch string, time bool) {
 	// project
 	p, ok := config.Issue.Describes[project]
 	if !ok {
+		return
+	}
+	if all {
+		for name, describe := range p {
+			if time {
+				fmt.Printf("[branch: %s, issue: %s]: \"%s\".(%s)\n", name, describe.Number, describe.Describe, describe.Time)
+			} else {
+				fmt.Printf("[branch: %s, issue: %s]: \"%s\"\n", name, describe.Number, describe.Describe)
+			}
+		}
 		return
 	}
 
