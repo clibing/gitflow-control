@@ -274,3 +274,44 @@ func GetProjectName() (string, error) {
 	}
 	return msgs[1], nil
 }
+
+func NameAndEmail(name, email string, global bool) {
+	_, err := CurrentBranch()
+	if err != nil {
+		fmt.Printf("设置错误：%s\n", err.Error())
+		return
+	}
+	// 读模式
+	if len(name) == 0 || len(email) == 0 {
+		if global {
+			n, e := ExecGit("config", "--global", "user.name")
+			if e == nil {
+				fmt.Println("name:  ", n)
+			}
+			p, e := ExecGit("config", "--global", "user.email")
+			if e == nil {
+				fmt.Println("email: ", p)
+			}
+		} else {
+			n, e := ExecGit("config", "user.name")
+			if e == nil {
+				fmt.Println("name:  ", n)
+			}
+			p, e := ExecGit("config", "user.email")
+			if e == nil {
+				fmt.Println("email: ", p)
+			}
+		}
+		return
+	}
+
+	if global {
+		ExecGit("config", "--global", "user.name", name)
+		ExecGit("config", "--global", "user.email", email)
+		return
+	} else {
+		ExecGit("config", "user.name", name)
+		ExecGit("config", "user.email", email)
+		return
+	}
+}

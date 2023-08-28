@@ -161,16 +161,17 @@ func UnInstall(path string) error {
 // 扩展的git命令列表
 func gitCommandSymlinks(path string) []string {
 	return []string{
-		filepath.Join(path, "git-ci"),       // 自定义提交
-		filepath.Join(path, "git-feat"),     // 创建feat分支
-		filepath.Join(path, "git-fix"),      // 创建fit分支
-		filepath.Join(path, "git-docs"),     // 创建docs类分支
-		filepath.Join(path, "git-style"),    // 创建sytle的分支
-		filepath.Join(path, "git-refactor"), // 创建refactory的分支
-		filepath.Join(path, "git-test"),     // 创建test分支
-		filepath.Join(path, "git-chore"),    // 创建chore分支
-		filepath.Join(path, "git-hotfix"),   // 创建hotfix分支
-		filepath.Join(path, "git-issue"),    // 记录最近一次的issue号
-		filepath.Join(path, "git-record"),   // 记录当前分支描述信息， 主要用于描述当前分支业务类型
+		filepath.Join(path, "git-ci"),         // 自定义提交
+		filepath.Join(path, "git-feat"),       // 创建feat分支
+		filepath.Join(path, "git-fix"),        // 创建fit分支
+		filepath.Join(path, "git-docs"),       // 创建docs类分支
+		filepath.Join(path, "git-style"),      // 创建sytle的分支
+		filepath.Join(path, "git-refactor"),   // 创建refactory的分支
+		filepath.Join(path, "git-test"),       // 创建test分支
+		filepath.Join(path, "git-chore"),      // 创建chore分支
+		filepath.Join(path, "git-hotfix"),     // 创建hotfix分支
+		filepath.Join(path, "git-issue"),      // 记录最近一次的issue号
+		filepath.Join(path, "git-record"),     // 记录当前分支描述信息， 主要用于描述当前分支业务类型
+		filepath.Join(path, "git-name-email"), // 设置当前提交的账号和邮箱，支持全局设置
 	}
 }
