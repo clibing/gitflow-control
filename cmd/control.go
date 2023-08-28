@@ -234,7 +234,8 @@ func (m *Control) IssueApp() *cli.App {
 
 			time := c.Bool("time")
 			if len(issue) == 0 {
-				internal.IssueDescribe(project, branch, time)
+				all := c.Bool("all")
+				internal.IssueDescribe(project, branch, time, all)
 				return nil
 			}
 			describe := c.String("describe")
@@ -271,6 +272,11 @@ func (m *Control) IssueApp() *cli.App {
 				Name:    "time",
 				Aliases: []string{"t"},
 				Usage:   "show create time",
+			},
+			&cli.BoolFlag{
+				Name:    "all",
+				Aliases: []string{"a"},
+				Usage:   "show current project all branch description",
 			},
 		},
 	}

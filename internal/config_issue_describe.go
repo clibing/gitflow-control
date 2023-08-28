@@ -26,7 +26,7 @@ func IssueUpgrade() error {
 	return nil
 }
 
-func IssueDescribe(project, branch string, time bool) {
+func GetIssueDescribe(project, branch string) (issue string) {
 	if len(project) == 0 || len(branch) == 0 {
 		return
 	}
@@ -34,6 +34,36 @@ func IssueDescribe(project, branch string, time bool) {
 	// project
 	p, ok := config.Issue.Describes[project]
 	if !ok {
+		return
+	}
+
+	// 获取项目的分支描述map
+	b, ok := p[branch]
+	if !ok {
+		return
+	}
+	issue = b.Number
+	return
+}
+
+func IssueDescribe(project, branch string, time, all bool) {
+	if len(project) == 0 || len(branch) == 0 {
+		return
+	}
+
+	// project
+	p, ok := config.Issue.Describes[project]
+	if !ok {
+		return
+	}
+	if all {
+		for name, describe := range p {
+			if time {
+				fmt.Printf("[branch: %s, issue: %s]: \"%s\".(%s)\n", name, describe.Number, describe.Describe, describe.Time)
+			} else {
+				fmt.Printf("[branch: %s, issue: %s]: \"%s\"\n", name, describe.Number, describe.Describe)
+			}
+		}
 		return
 	}
 
@@ -55,6 +85,8 @@ func IssueRecord(project, branch, issue, describe string) {
 		return
 	}
 
+	// current time
+	v := time.Now().Format("2006-01-02 15:04:05")
 	// project
 	p, ok := config.Issue.Describes[project]
 	if !ok {
@@ -62,6 +94,7 @@ func IssueRecord(project, branch, issue, describe string) {
 		b[branch] = &BugDescribe{
 			Number:   issue,
 			Describe: describe,
+			Time:     v,
 		}
 		config.Issue.Describes[project] = b
 		Rewrite()
@@ -70,12 +103,11 @@ func IssueRecord(project, branch, issue, describe string) {
 
 	// 获取项目的分支描述map
 	b, ok := p[branch]
-	v := time.Now().Format("2006-01-02 15:04:05")
 	if !ok {
 		p[branch] = &BugDescribe{
 			Number:   issue,
 			Describe: describe,
-			Time: v,
+			Time:     v,
 		}
 		Rewrite()
 		return
