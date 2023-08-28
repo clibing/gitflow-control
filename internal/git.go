@@ -284,11 +284,23 @@ func NameAndEmail(name, email string, global bool) {
 	// 读模式
 	if len(name) == 0 || len(email) == 0 {
 		if global {
-			ExecGit("config", "--global", "user.name")
-			ExecGit("config", "--global", "user.email")
+			n, e := ExecGit("config", "--global", "user.name")
+			if e == nil {
+				fmt.Println("name:  ", n)
+			}
+			p, e := ExecGit("config", "--global", "user.email")
+			if e == nil {
+				fmt.Println("email: ", p)
+			}
 		} else {
-			ExecGit("config", "user.name")
-			ExecGit("config", "user.email")
+			n, e := ExecGit("config", "user.name")
+			if e == nil {
+				fmt.Println("name:  ", n)
+			}
+			p, e := ExecGit("config", "user.email")
+			if e == nil {
+				fmt.Println("email: ", p)
+			}
 		}
 		return
 	}
