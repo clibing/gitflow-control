@@ -353,11 +353,11 @@ func (m *Control) SetCommitNameAndEmail() *cli.App {
 				Usage:   "git commit name",
 				Value:   "",
 			},
-			&cli.BoolFlag{
+			&cli.StringFlag{
 				Name:    "email",
 				Aliases: []string{"e"},
 				Usage:   "git commit email",
-				Value:   false,
+				Value:   "",
 			},
 		},
 	}
