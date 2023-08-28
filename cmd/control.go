@@ -35,6 +35,7 @@ func (m *Control) Init() {
 	subApps[10] = m.IssueApp()
 	subApps[11] = m.BranchRecord()
 	subApps[12] = m.SetCommitNameAndEmail()
+	// 1. 在subApps追加命令行; 2. 在gitCommandSymlinks()方法追加ln方法名字
 	m.Config = internal.GetConfig()
 }
 
