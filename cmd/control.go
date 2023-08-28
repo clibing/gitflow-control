@@ -19,7 +19,7 @@ type Control struct {
 	Config      *internal.Config // 配置信息
 }
 
-var subApps = make([]*cli.App, 12)
+var subApps = make([]*cli.App, 13)
 
 func (m *Control) Init() {
 	subApps[0] = m.NewBranchCliApp(internal.Feat)
@@ -34,6 +34,7 @@ func (m *Control) Init() {
 	subApps[9] = m.CheckMessageApp()
 	subApps[10] = m.IssueApp()
 	subApps[11] = m.BranchRecord()
+	subApps[12] = m.SetCommitNameAndEmail()
 	m.Config = internal.GetConfig()
 }
 
@@ -315,6 +316,46 @@ func (m *Control) BranchRecord() *cli.App {
 				Name:    "all",
 				Aliases: []string{"a"},
 				Usage:   "show all description",
+				Value:   false,
+			},
+		},
+	}
+}
+
+// 分支  记录器
+func (m *Control) SetCommitNameAndEmail() *cli.App {
+	return &cli.App{
+		Name:                 "git-name-email",
+		Usage:                "Git name & email, show current value if name or email is empty.",
+		UsageText:            "git name-email --name \"clibing\" --email \"wmsjhappy@gmail.com\" --global ",
+		Version:              fmt.Sprintf("%s %s %s", m.Version, m.BuildDate, m.BuildCommit),
+		Authors:              []*cli.Author{{Name: "clibing", Email: "wmsjhappy@gmail.com"}},
+		Copyright:            "Copyright (c) " + time.Now().Format("2006") + " clibing, All rights reserved.",
+		EnableBashCompletion: true,
+		Action: func(c *cli.Context) error {
+			name := c.String("name")
+			email := c.String("email")
+			global := c.Bool("global")
+			internal.SetNameAndEmail(name, email, global)
+			return nil
+		},
+		Flags: []cli.Flag{
+			&cli.BoolFlag{
+				Name:    "global",
+				Aliases: []string{"g"},
+				Usage:   "global setting",
+				Value:   false,
+			},
+			&cli.StringFlag{
+				Name:    "name",
+				Aliases: []string{"n"},
+				Usage:   "git commit name",
+				Value:   "",
+			},
+			&cli.BoolFlag{
+				Name:    "email",
+				Aliases: []string{"e"},
+				Usage:   "git commit email",
 				Value:   false,
 			},
 		},

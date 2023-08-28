@@ -274,3 +274,21 @@ func GetProjectName() (string, error) {
 	}
 	return msgs[1], nil
 }
+
+func SetNameAndEmail(name, email string, global bool) {
+	_, err := CurrentBranch()
+	if err != nil {
+		fmt.Printf("设置错误：%s\n", err.Error())
+		return
+	}
+
+	if global {
+		ExecGit("config", "--global", "user.name", name)
+		ExecGit("config", "--global", "user.email", email)
+		return
+	} else {
+		ExecGit("config", "user.name", name)
+		ExecGit("config", "user.email", email)
+		return
+	}
+}
