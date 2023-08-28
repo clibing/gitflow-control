@@ -336,7 +336,7 @@ func (m *Control) SetCommitNameAndEmail() *cli.App {
 			name := c.String("name")
 			email := c.String("email")
 			global := c.Bool("global")
-			internal.SetNameAndEmail(name, email, global)
+			internal.NameAndEmail(name, email, global)
 			return nil
 		},
 		Flags: []cli.Flag{
