@@ -3,9 +3,9 @@ package internal
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"regexp"
+	"time"
 )
 
 const (
@@ -48,8 +48,6 @@ const commitMessageCheckFailedMsgV2 = `
 │                                                                                                                 │
 ╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
 注意：issue的格式为[英文字母+引文短接线+数字]`
-
-const projectNamePattern = `(?m)\/([a-zA-Z_\-0-9]+)\.git`
 
 var CommitMessageType = map[string]string{
 	Feat:     "新功能（feature）",
@@ -193,7 +191,7 @@ func Commit(msg CommitMessage, config *Config) error {
 		return err
 	}
 
-	f, err := ioutil.TempFile("", "gitflow-commit")
+	f, err := os.CreateTemp("", "gitflow-commit")
 	if err != nil {
 		return err
 	}
@@ -229,7 +227,7 @@ func Commit(msg CommitMessage, config *Config) error {
 	if err != nil {
 		return err
 	}
-
+	time.Sleep(100 * time.Millisecond)
 	_, err = ExecGit("commit", "-F", f.Name())
 	return err
 }
@@ -241,7 +239,7 @@ func CheckCommitMessage(message string, config *Config) error {
 	}
 	// 增加 commit-msg hook时使用
 	reg := regexp.MustCompile(rg)
-	bs, err := ioutil.ReadFile(message)
+	bs, err := os.ReadFile(message)
 	if err != nil {
 		return err
 	}
