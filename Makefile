@@ -5,6 +5,10 @@ COMMIT_SHA1     	:= $(shell git rev-parse HEAD)
 all: clean
 	bash .cross_compile.sh
 
+single:
+	go build -trimpath -o "dist/single" -ldflags "-X 'main.version=${BUILD_VERSION}' -X 'main.buildDate=${BUILD_DATE}' -X 'main.commitID=${COMMIT_SHA1}'"
+	./dist/single install
+
 release: all
 	ghr -u clibing -t ${GITHUB_TOKEN} -replace -recreate -name "Bump ${BUILD_VERSION}" --debug ${BUILD_VERSION} dist
 
